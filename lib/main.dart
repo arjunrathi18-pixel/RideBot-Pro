@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
-
 import 'data/database/ride_database.dart';
 import 'data/database/settings_database.dart';
 
 
 import 'services/notifications/notification_service.dart';
-
-
 import 'services/app_state_provider.dart';
 
 
 import 'screens/main_navigation.dart';
-
-
 
 
 
@@ -30,8 +25,6 @@ WidgetsFlutterBinding.ensureInitialized();
 
 
 
-
-
 await RideDatabase.initialize();
 
 
@@ -41,8 +34,6 @@ await SettingsDatabase.initialize();
 
 
 await NotificationService.initialize();
-
-
 
 
 
@@ -64,8 +55,6 @@ const RideBotApp()
 
 
 
-
-
 class RideBotApp extends StatelessWidget {
 
 
@@ -75,7 +64,6 @@ const RideBotApp({
 super.key
 
 });
-
 
 
 
@@ -121,16 +109,13 @@ title:
 
 
 
-
 theme:
 
 ThemeData(
 
 
 
-useMaterial3:
-
-true,
+useMaterial3:true,
 
 
 
