@@ -1,53 +1,70 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
-import 'data/database/ride_database.dart';
-import 'data/database/settings_database.dart';
-
-
-import 'services/notifications/notification_service.dart';
 import 'services/app_state_provider.dart';
-
-
 import 'screens/main_navigation.dart';
 
 
 
 
 
-Future<void> main() async {
+void main() {
+
+
+  WidgetsFlutterBinding.ensureInitialized();
 
 
 
-WidgetsFlutterBinding.ensureInitialized();
+  FlutterError.onError = (FlutterErrorDetails details) {
+
+    FlutterError.presentError(details);
+
+  };
 
 
 
-
-await RideDatabase.initialize();
-
+  runZonedGuarded(
 
 
-await SettingsDatabase.initialize();
+    () {
 
 
+      runApp(
 
-await NotificationService.initialize();
+        const RideBotApp(),
+
+      );
 
 
+    },
 
 
+    (error, stackTrace) {
 
-runApp(
 
-const RideBotApp()
+      runApp(
 
-);
+        ErrorApp(
+
+          error: error.toString(),
+
+        ),
+
+      );
+
+
+    },
+
+
+  );
 
 
 
 }
+
 
 
 
@@ -58,101 +75,309 @@ const RideBotApp()
 class RideBotApp extends StatelessWidget {
 
 
+  const RideBotApp({
 
-const RideBotApp({
+    super.key,
 
-super.key
-
-});
-
+  });
 
 
 
 
 
-@override
-
-Widget build(BuildContext context){
-
+  @override
+  Widget build(BuildContext context) {
 
 
-return ChangeNotifierProvider(
+    return ChangeNotifierProvider(
 
 
-
-create:
-
-(context)
-
-=> AppStateProvider(),
+      create: (_) => AppStateProvider(),
 
 
 
+      child: MaterialApp(
 
 
-child:
-
-MaterialApp(
-
-
-
-debugShowCheckedModeBanner:
-
-false,
+        debugShowCheckedModeBanner: false,
 
 
 
-title:
-
-"RideBot Pro",
+        title: "RideBot Pro",
 
 
 
-
-theme:
-
-ThemeData(
+        theme: ThemeData(
 
 
-
-useMaterial3:true,
-
+          useMaterial3: true,
 
 
-colorScheme:
+          colorScheme: ColorScheme.fromSeed(
 
-ColorScheme.fromSeed(
+            seedColor: Colors.blue,
 
-seedColor:
+          ),
 
-Colors.blue,
 
-),
+        ),
 
 
 
-),
+        home: const MainNavigation(),
 
 
 
 
 
-
-home:
-
-const MainNavigation(),
+        builder: (context, child) {
 
 
 
-),
+          ErrorWidget.builder = (FlutterErrorDetails error) {
 
 
 
-);
+            return ErrorScreen(
+
+              error: error.exception.toString(),
+
+            );
+
+
+          };
+
+
+
+          return child!;
+
+
+        },
+
+
+
+      ),
+
+
+
+    );
+
+
+
+  }
 
 
 
 }
+
+
+
+
+
+
+
+
+
+class ErrorApp extends StatelessWidget {
+
+
+  final String error;
+
+
+
+  const ErrorApp({
+
+    super.key,
+
+    required this.error,
+
+  });
+
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+
+
+    return MaterialApp(
+
+
+      debugShowCheckedModeBanner: false,
+
+
+      home: ErrorScreen(
+
+        error: error,
+
+      ),
+
+
+    );
+
+
+  }
+
+
+}
+
+
+
+
+
+
+
+
+
+class ErrorScreen extends StatelessWidget {
+
+
+  final String error;
+
+
+
+  const ErrorScreen({
+
+    super.key,
+
+    required this.error,
+
+  });
+
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+
+
+    return Scaffold(
+
+
+      backgroundColor: Colors.red,
+
+
+
+      body: SafeArea(
+
+
+
+        child: Padding(
+
+
+
+          padding: const EdgeInsets.all(20),
+
+
+
+          child: SingleChildScrollView(
+
+
+
+            child: Column(
+
+
+
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+
+
+              children: [
+
+
+
+                const Text(
+
+
+                  "RIDE BOT ERROR",
+
+
+
+                  style: TextStyle(
+
+
+
+                    color: Colors.white,
+
+
+
+                    fontSize: 28,
+
+
+
+                    fontWeight: FontWeight.bold,
+
+
+
+                  ),
+
+
+
+                ),
+
+
+
+
+                const SizedBox(height: 20),
+
+
+
+
+                Text(
+
+
+
+                  error,
+
+
+
+                  style: const TextStyle(
+
+
+
+                    color: Colors.white,
+
+
+
+                    fontSize: 16,
+
+
+
+                  ),
+
+
+
+                ),
+
+
+
+              ],
+
+
+
+            ),
+
+
+
+          ),
+
+
+
+        ),
+
+
+
+      ),
+
+
+
+    );
+
+
+
+  }
 
 
 
