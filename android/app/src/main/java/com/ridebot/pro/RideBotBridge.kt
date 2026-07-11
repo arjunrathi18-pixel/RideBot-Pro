@@ -70,6 +70,43 @@ mapOf(
 "distance" to distance,
 
 "pickup" to pickup
+  channel.setMethodCallHandler{
+
+call,result ->
+
+
+when(call.method){
+
+
+"accept_ride" -> {
+
+
+RideBotAccessibilityService
+.instance
+?.clickAcceptButton()
+
+
+
+result.success(true)
+
+
+}
+
+
+
+else -> {
+
+result.notImplemented()
+
+}
+
+
+
+}
+
+
+
+  }
 
 )
 
