@@ -1,19 +1,11 @@
-import 'package:flutter/services.dart';
-
-
-import '../../models/ride_model.dart';
-
 import '../../models/settings_model.dart';
-
-
-import '../filter/filter_engine.dart';
-
+import '../../models/ride_model.dart';
 
 import '../../data/database/ride_database.dart';
 
-
 import '../notifications/notification_service.dart';
 
+import '../filter/filter_engine.dart';
 
 
 
@@ -23,15 +15,9 @@ class AutomationService {
 
 
 
-static const MethodChannel _channel =
+static bool running = false;
 
-const MethodChannel(
-
-'ridebot/automation'
-
-);
-
-
+static SettingsModel? _settings;
 
 
 
@@ -47,109 +33,50 @@ SettingsModel settings
 
 
 
-_channel.setMethodCallHandler(
+_settings = settings;
 
-(call) async {
+running = true;
 
 
 
-if(call.method == "ride_detected"){
+}
 
 
 
-final data =
 
-Map<String,dynamic>.from(
 
-call.arguments
 
-);
 
+static void stop(){
 
 
 
+running = false;
 
-final ride = RideModel(
 
 
+}
 
-platform:
 
-"Auto Ride",
 
 
 
-fare:
 
-(data["fare"] ?? 0)
 
-.toDouble(),
 
+static Future<void> processRide(
 
+RideModel ride
 
-distance:
+) async {
 
-(data["distance"] ?? 0)
 
-.toDouble(),
 
+if(!running || _settings == null){
 
+return;
 
-earningPerKm:
-
-
-
-(data["fare"] ?? 0)
-
-.toDouble()
-
-/
-
-((data["distance"] ?? 1)
-
-.toDouble()),
-
-
-
-pickup:
-
-data["pickup"] ?? "",
-
-
-
-dropLocation:
-
-"",
-
-
-
-status:
-
-"DETECTED",
-
-
-
-createdAt:
-
-DateTime.now(),
-
-
-
-);
-
-
-
-
-
-
-await NotificationService.rideDetected(
-
-ride.fare,
-
-ride.distance,
-
-);
-
+}
 
 
 
@@ -162,9 +89,10 @@ FilterEngine.checkRide(
 
 ride,
 
-settings,
+_settings!
 
 );
+
 
 
 
@@ -177,29 +105,17 @@ if(accepted){
 
 await RideDatabase.saveRide(
 
-
-
 ride.copyWith(
 
-status:
+status:"ACCEPTED"
 
-"ACCEPTED",
-
-),
-
-
+)
 
 );
 
 
 
-
-
 await NotificationService.rideAccepted();
-
-
-
-await acceptRide();
 
 
 
@@ -211,17 +127,11 @@ else{
 
 await RideDatabase.saveRide(
 
-
-
 ride.copyWith(
 
-status:
+status:"REJECTED"
 
-"REJECTED",
-
-),
-
-
+)
 
 );
 
@@ -239,35 +149,7 @@ await NotificationService.rideRejected();
 
 
 
-}
 
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-static Future<void> acceptRide() async {
-
-
-
-await _channel.invokeMethod(
-
-"accept_ride"
-
-);
-
-
-
-}
 
 
 
