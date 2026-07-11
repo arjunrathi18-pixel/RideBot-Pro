@@ -2,7 +2,9 @@ package com.ridebot.pro
 
 
 import io.flutter.embedding.engine.FlutterEngine
+
 import io.flutter.plugin.common.MethodChannel
+
 
 
 
@@ -12,15 +14,14 @@ object RideBotBridge {
 
 
 
-private const val CHANNEL_NAME =
-
-"ridebot/automation"
+private const val CHANNEL = "ridebot/automation"
 
 
 
 
 
-private lateinit var channel: MethodChannel
+private var channel: MethodChannel? = null
+
 
 
 
@@ -37,80 +38,11 @@ flutterEngine: FlutterEngine
 
 channel = MethodChannel(
 
-
-
 flutterEngine.dartExecutor.binaryMessenger,
 
-
-
-CHANNEL_NAME
-
-
+CHANNEL
 
 )
-
-
-
-
-
-
-
-channel.setMethodCallHandler {
-
-call,
-
-result ->
-
-
-
-
-
-
-when(call.method){
-
-
-
-"accept_ride" -> {
-
-
-
-RideBotAccessibilityService
-
-.instance
-
-?.clickAcceptButton()
-
-
-
-result.success(true)
-
-
-
-}
-
-
-
-
-
-
-
-else -> {
-
-
-
-result.notImplemented()
-
-
-
-}
-
-
-
-}
-
-
-
-}
 
 
 
@@ -129,49 +61,58 @@ fare: Double,
 
 distance: Double,
 
-pickup: String
+pickup: String,
+
+drop: String
 
 ){
 
 
 
-if(::channel.isInitialized){
+channel?.invokeMethod(
 
-
-
-channel.invokeMethod(
-
-
-
-"ride_detected",
-
-
+"newRide",
 
 mapOf(
 
-
-
 "fare" to fare,
-
-
 
 "distance" to distance,
 
+"pickup" to pickup,
 
-
-"pickup" to pickup
-
-
+"drop" to drop
 
 )
-
-
 
 )
 
 
 
 }
+
+
+
+
+
+
+
+
+fun sendStatus(
+
+status: String
+
+){
+
+
+
+channel?.invokeMethod(
+
+"serviceStatus",
+
+status
+
+)
 
 
 
