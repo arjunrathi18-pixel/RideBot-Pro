@@ -39,9 +39,9 @@ android {
 
         applicationId "com.ridebot.pro"
 
-        minSdk flutter.minSdkVersion
+        minSdk 23
 
-        targetSdk flutter.targetSdkVersion
+        targetSdk 35
 
         versionCode flutter.versionCode
 
