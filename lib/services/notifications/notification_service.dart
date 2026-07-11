@@ -1,5 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'package:permission_handler/permission_handler.dart';
+
+
 
 
 
@@ -8,9 +11,10 @@ class NotificationService {
 
 
 
-static final FlutterLocalNotificationsPlugin _plugin =
+static final FlutterLocalNotificationsPlugin _notifications =
 
 FlutterLocalNotificationsPlugin();
+
 
 
 
@@ -46,9 +50,90 @@ android: androidSettings,
 
 
 
-await _plugin.initialize(
+await _notifications.initialize(
 
 settings
+
+);
+
+
+
+
+
+
+await _createChannel();
+
+
+
+
+
+
+await Permission.notification.request();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+static Future<void> _createChannel() async {
+
+
+
+const channel =
+
+AndroidNotificationChannel(
+
+
+
+'ridebot_channel',
+
+
+
+'RideBot Notifications',
+
+
+
+description:
+
+'RideBot ride alerts',
+
+
+
+importance:
+
+Importance.high,
+
+
+
+);
+
+
+
+
+
+
+final androidPlugin =
+
+_notifications.resolvePlatformSpecificImplementation<
+
+AndroidFlutterLocalNotificationsPlugin
+
+>();
+
+
+
+
+
+await androidPlugin?.createNotificationChannel(
+
+channel
 
 );
 
@@ -74,7 +159,13 @@ String body
 
 
 
-const androidDetails =
+const details =
+
+NotificationDetails(
+
+
+
+android:
 
 AndroidNotificationDetails(
 
@@ -85,6 +176,12 @@ AndroidNotificationDetails(
 
 
 'RideBot Notifications',
+
+
+
+channelDescription:
+
+'RideBot ride alerts',
 
 
 
@@ -100,6 +197,10 @@ Priority.high,
 
 
 
+),
+
+
+
 );
 
 
@@ -108,7 +209,7 @@ Priority.high,
 
 
 
-await _plugin.show(
+await _notifications.show(
 
 
 
@@ -128,11 +229,7 @@ body,
 
 
 
-const NotificationDetails(
-
-android: androidDetails,
-
-),
+details,
 
 
 
@@ -141,6 +238,7 @@ android: androidDetails,
 
 
 }
+
 
 
 
@@ -160,9 +258,15 @@ double distance
 
 await showNotification(
 
+
+
 "New Ride Detected",
 
-"₹$fare | $distance KM"
+
+
+"₹${fare.toStringAsFixed(0)} | ${distance.toStringAsFixed(1)} KM"
+
+
 
 );
 
@@ -183,9 +287,15 @@ static Future<void> rideAccepted() async {
 
 await showNotification(
 
+
+
 "Ride Accepted",
 
-"Ride successfully accepted"
+
+
+"Ride accepted automatically"
+
+
 
 );
 
@@ -206,9 +316,15 @@ static Future<void> rideRejected() async {
 
 await showNotification(
 
+
+
 "Ride Rejected",
 
+
+
 "Ride did not match filters"
+
+
 
 );
 
