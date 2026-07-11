@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
 
 import '../../models/ride_model.dart';
-
+import '../../services/filter/filter_engine.dart';
+import '../../models/settings_model.dart';
 
 
 class AutomationService {
@@ -70,6 +71,47 @@ DateTime.now()
 
 
 return null;
+  final settings = SettingsModel(
+
+autoAccept:true,
+
+minimumFare:100,
+
+minimumPerKm:12,
+
+maximumDistance:40,
+
+);
+  bool accepted =
+FilterEngine.checkRide(
+
+ride,
+
+settings
+
+);
+  if(accepted){
+
+
+print(
+"Ride Accepted"
+);
+
+
+// आगे Auto Click Function आएगा
+
+
+}
+
+else{
+
+
+print(
+"Ride Rejected"
+);
+
+
+}
 
 
 }
