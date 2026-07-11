@@ -1,104 +1,131 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
 
 
-<application
 
 
-android:label="RideBot Pro"
+    <application
 
 
-android:name="${applicationName}"
+        android:label="RideBot Pro"
 
 
-android:icon="@mipmap/ic_launcher">
+        android:name="${applicationName}"
 
 
+        android:icon="@mipmap/ic_launcher">
 
-<activity
 
 
-android:name=".MainActivity"
 
 
-android:exported="true"
 
+        <activity
 
-android:launchMode="singleTop"
 
+            android:name=".MainActivity"
 
-android:theme="@style/LaunchTheme"
 
+            android:exported="true"
 
-android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode">
 
+            android:launchMode="singleTop"
 
 
-<intent-filter>
+            android:theme="@style/LaunchTheme"
 
 
-<action android:name="android.intent.action.MAIN"/>
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density"
 
 
-<category android:name="android.intent.category.LAUNCHER"/>
+            android:hardwareAccelerated="true"
 
 
-</intent-filter>
+            android:windowSoftInputMode="adjustResize">
 
 
 
-</activity>
 
 
+            <intent-filter>
 
 
-<service
+                <action android:name="android.intent.action.MAIN"/>
 
 
-android:name=".RideBotAccessibilityService"
+                <category android:name="android.intent.category.LAUNCHER"/>
 
 
-android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            </intent-filter>
 
 
-android:exported="true">
 
 
 
-<intent-filter>
+        </activity>
 
 
-<action android:name="android.accessibilityservice.AccessibilityService"/>
 
 
-</intent-filter>
 
 
 
-<meta-data
 
+        <service
 
-android:name="android.accessibilityservice"
 
+            android:name=".RideBotAccessibilityService"
 
-android:resource="@xml/accessibility_config"/>
 
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
 
 
-</service>
+            android:exported="true">
 
 
 
 
-</application>
 
+            <intent-filter>
+
+
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+
+
+            </intent-filter>
+
+
+
+
+
+            <meta-data
+
+
+                android:name="android.accessibilityservice"
+
+
+                android:resource="@xml/accessibility_service_config"/>
+
+
+
+
+
+        </service>
+
+
+
+
+
+
+
+    </application>
 
 
 </manifest>
