@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 
+
 import '../data/database/ride_database.dart';
 
 import '../models/ride_model.dart';
 
 
 
+
+
 class HistoryScreen extends StatelessWidget {
 
 
+
 const HistoryScreen({
+
 super.key
+
 });
 
 
 
 
+
+
+
 @override
+
 Widget build(BuildContext context){
-
-
-
-final rides =
-
-RideDatabase.getAllRides();
-
-
 
 
 
@@ -46,6 +48,7 @@ const Text(
 ),
 
 
+
 centerTitle:true,
 
 ),
@@ -54,13 +57,56 @@ centerTitle:true,
 
 
 
+
 body:
 
-rides.isEmpty
+FutureBuilder<List<RideModel>>(
 
-?
 
-const Center(
+
+future:
+
+RideDatabase.getAllRides(),
+
+
+
+
+builder:
+
+(context, snapshot){
+
+
+
+if(snapshot.connectionState ==
+
+ConnectionState.waiting){
+
+
+
+return const Center(
+
+child:
+
+CircularProgressIndicator(),
+
+);
+
+
+
+}
+
+
+
+
+
+
+if(!snapshot.hasData ||
+
+snapshot.data!.isEmpty){
+
+
+
+return const Center(
 
 child:
 
@@ -70,13 +116,30 @@ Text(
 
 ),
 
-)
+);
 
 
 
-:
+}
 
-ListView.builder(
+
+
+
+
+
+
+final rides =
+
+snapshot.data!;
+
+
+
+
+
+
+
+
+return ListView.builder(
 
 
 
@@ -98,15 +161,17 @@ itemBuilder:
 
 
 
-final ride =
-
-rides[index];
-
-
-
 return _rideCard(
 
-ride
+rides[index]
+
+);
+
+
+
+},
+
+
 
 );
 
@@ -132,6 +197,7 @@ ride
 
 
 
+
 Widget _rideCard(
 
 RideModel ride
@@ -148,6 +214,7 @@ ride.status == "ACCEPTED";
 
 
 
+
 return Card(
 
 
@@ -156,15 +223,20 @@ margin:
 
 const EdgeInsets.only(
 
-bottom:12
+bottom:12,
 
 ),
+
+
+
 
 
 
 child:
 
 Padding(
+
+
 
 padding:
 
@@ -175,6 +247,8 @@ const EdgeInsets.all(16),
 child:
 
 Column(
+
+
 
 crossAxisAlignment:
 
@@ -189,6 +263,8 @@ children:[
 
 
 Row(
+
+
 
 mainAxisAlignment:
 
@@ -210,16 +286,19 @@ const TextStyle(
 
 fontWeight:
 
-FontWeight.bold
+FontWeight.bold,
 
 ),
 
 ),
+
 
 
 
 
 Icon(
+
+
 
 accepted
 
@@ -230,6 +309,8 @@ Icons.check_circle
 :
 
 Icons.cancel,
+
+
 
 ),
 
@@ -245,9 +326,21 @@ Icons.cancel,
 
 
 
+
 const SizedBox(
 
-height:10
+height:10,
+
+),
+
+
+
+
+
+
+Text(
+
+"Fare : ₹${ride.fare.toStringAsFixed(2)}"
 
 ),
 
@@ -257,33 +350,40 @@ height:10
 
 Text(
 
-"Fare: ₹${ride.fare}"
+"Distance : ${ride.distance} KM"
 
 ),
+
+
 
 
 
 Text(
 
-"Distance: ${ride.distance} KM"
+"Earning/KM : ₹${ride.earningPerKm.toStringAsFixed(2)}"
 
 ),
+
+
 
 
 
 Text(
 
-"₹/KM: ${ride.earningPerKm.toStringAsFixed(2)}"
+"Pickup : ${ride.pickup}"
 
 ),
+
+
 
 
 
 Text(
 
-"Pickup: ${ride.pickup}"
+"Status : ${ride.status}"
 
 ),
+
 
 
 
@@ -297,7 +397,7 @@ style:
 
 const TextStyle(
 
-fontSize:12
+fontSize:12,
 
 ),
 
@@ -324,8 +424,6 @@ fontSize:12
 
 
 }
-
-
 
 
 
