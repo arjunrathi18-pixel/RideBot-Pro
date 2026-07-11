@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../services/app_state_provider.dart';
 
 
 
@@ -15,113 +18,118 @@ super.key
 Widget build(BuildContext context){
 
 
+final app =
+context.watch<AppStateProvider>();
+
+
+
 return Scaffold(
 
 
 appBar:
+
 AppBar(
 
 title:
-const Text(
-"Settings"
-),
+const Text("Settings")
 
 ),
 
 
 
 body:
+
 ListView(
 
 padding:
 const EdgeInsets.all(16),
 
 
-
 children:[
 
 
 
-Card(
-
-child:
-ListTile(
-
-leading:
-const Icon(
-Icons.notifications
-),
+SwitchListTile(
 
 title:
 const Text(
-"Notifications"
-),
-
-subtitle:
-const Text(
-"Ride alerts and status"
+"Auto Accept"
 ),
 
 
-),
+value:
+app.settings.autoAccept,
+
+
+onChanged:(value){
+
+
+
+app.settings.autoAccept =
+value;
+
+
+app.notifyListeners();
+
+
+},
 
 ),
 
 
 
 
-
-Card(
-
-child:
 ListTile(
-
-leading:
-const Icon(
-Icons.location_on
-),
 
 title:
 const Text(
-"Location Zones"
+"Minimum Fare"
 ),
+
 
 subtitle:
-const Text(
-"Manage preferred areas"
+Text(
+"₹${app.settings.minimumFare}"
 ),
 
 
 ),
 
-),
 
 
 
-
-
-Card(
-
-child:
 ListTile(
-
-leading:
-const Icon(
-Icons.security
-),
 
 title:
 const Text(
-"Permissions"
+"Minimum ₹/KM"
 ),
+
 
 subtitle:
+Text(
+"${app.settings.minimumPerKm}"
+),
+
+
+),
+
+
+
+
+ListTile(
+
+title:
 const Text(
-"Accessibility and background access"
+"Maximum Distance"
 ),
 
 
+subtitle:
+Text(
+"${app.settings.maximumDistance} KM"
 ),
+
 
 ),
 
@@ -133,9 +141,7 @@ const Text(
 ),
 
 
-
 );
-
 
 
 }
