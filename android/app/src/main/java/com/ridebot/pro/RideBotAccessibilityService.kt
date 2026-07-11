@@ -2,62 +2,31 @@ package com.ridebot.pro
 
 
 import android.accessibilityservice.AccessibilityService
-import android.util.Log
+
 import android.view.accessibility.AccessibilityEvent
+
 import android.view.accessibility.AccessibilityNodeInfo
 
 
 
 
 
-class RideBotAccessibilityService :
-
-    AccessibilityService() {
+class RideBotAccessibilityService : AccessibilityService() {
 
 
 
-companion object {
-
-
-
-var instance:
-
-RideBotAccessibilityService? = null
-
-
-
-}
-
-
-
-
-
-
-
-override fun onServiceConnected(){
-
-
+override fun onServiceConnected() {
 
 super.onServiceConnected()
 
 
+RideBotBridge.sendStatus(
 
-instance = this
-
-
-
-Log.d(
-
-"RideBot",
-
-"Accessibility Connected"
+"Accessibility Service Connected"
 
 )
 
-
-
 }
-
 
 
 
@@ -69,98 +38,13 @@ override fun onAccessibilityEvent(
 
 event: AccessibilityEvent?
 
-){
+) {
 
 
 
-try {
+if(event == null){
 
-
-
-val root =
-
-rootInActiveWindow
-
-?: return
-
-
-
-
-
-val screenText =
-
-readNodeText(root)
-
-
-
-
-
-if(screenText.isNotEmpty()){
-
-
-
-Log.d(
-
-"RideBot",
-
-screenText
-
-)
-
-
-
-
-
-val fare =
-
-extractFare(screenText)
-
-
-
-
-
-val distance =
-
-extractDistance(screenText)
-
-
-
-
-
-
-
-
-if(fare > 0 && distance > 0){
-
-
-
-
-
-RideBotBridge.sendRideData(
-
-
-
-fare,
-
-
-
-distance,
-
-
-
-screenText
-
-
-
-)
-
-
-
-
-
-}
-
-
+return
 
 }
 
@@ -168,19 +52,40 @@ screenText
 
 
 
+if(event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED ||
+
+event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
+
+
+
+
+
+val rootNode = rootInActiveWindow ?: return
+
+
+
+
+
+val text =
+
+extractText(rootNode)
+
+
+
+
+
+
+if(text.isNotEmpty()){
+
+
+
+// Future ride screen parsing
+
+// Flutter bridge will receive data here
+
+
+
 }
-
-catch(e:Exception){
-
-
-
-Log.e(
-
-"RideBot",
-
-e.message ?: "Error"
-
-)
 
 
 
@@ -196,20 +101,25 @@ e.message ?: "Error"
 
 
 
+private fun extractText(
 
-
-private fun readNodeText(
-
-node: AccessibilityNodeInfo
+node: AccessibilityNodeInfo?
 
 ): String {
 
 
 
-val builder =
+if(node == null){
 
-StringBuilder()
+return ""
 
+}
+
+
+
+
+
+val builder = StringBuilder()
 
 
 
@@ -217,22 +127,13 @@ StringBuilder()
 
 if(node.text != null){
 
-
-
 builder.append(
 
-node.text
+node.text.toString()
 
 )
 
-builder.append(" ")
-
-
-
 }
-
-
-
 
 
 
@@ -242,30 +143,19 @@ for(i in 0 until node.childCount){
 
 
 
-val child =
+builder.append(
+
+extractText(
 
 node.getChild(i)
 
-
-
-if(child != null){
-
-
-
-builder.append(
-
-readNodeText(child)
+)
 
 )
 
 
 
 }
-
-
-
-}
-
 
 
 
@@ -283,191 +173,15 @@ return builder.toString()
 
 
 
-
-
-private fun extractFare(
-
-text:String
-
-):Double {
+override fun onInterrupt() {
 
 
 
-val regex =
+RideBotBridge.sendStatus(
 
-Regex(
-
-"\\d+(\\.\\d+)?"
+"Accessibility Service Interrupted"
 
 )
-
-
-
-val value =
-
-regex.find(text)
-
-
-
-return value
-
-?.value
-
-?.toDoubleOrNull()
-
-?:0.0
-
-
-
-}
-
-
-
-
-
-
-
-
-
-private fun extractDistance(
-
-text:String
-
-):Double {
-
-
-
-val regex =
-
-Regex(
-
-"(\\d+(\\.\\d+)?)\\s?(km|KM)"
-
-)
-
-
-
-
-
-val value =
-
-regex.find(text)
-
-
-
-
-
-return value
-
-?.groupValues?.get(1)
-
-?.toDoubleOrNull()
-
-?:0.0
-
-
-
-}
-
-
-
-
-
-
-
-
-
-fun clickAcceptButton(){
-
-
-
-val clicked =
-
-AccessibilityHelper.findAndClick(
-
-
-
-rootInActiveWindow,
-
-
-
-listOf(
-
-
-
-"accept",
-
-"confirm",
-
-"book",
-
-"continue",
-
-"ride now"
-
-
-
-)
-
-
-
-)
-
-
-
-
-
-Log.d(
-
-"RideBot",
-
-"Accept Click: $clicked"
-
-)
-
-
-
-}
-
-
-
-
-
-
-
-
-override fun onInterrupt(){
-
-
-
-Log.d(
-
-"RideBot",
-
-"Interrupted"
-
-)
-
-
-
-}
-
-
-
-
-
-
-
-
-override fun onDestroy(){
-
-
-
-instance = null
-
-
-
-super.onDestroy()
 
 
 
