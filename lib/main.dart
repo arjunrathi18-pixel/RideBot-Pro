@@ -2,44 +2,126 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'core/theme/app_theme.dart';
-import 'screens/main_navigation.dart';
-import 'services/app_state_provider.dart';
-import 'data/database/ride_database.dart';
+
 import 'models/ride_model.dart';
 import 'models/settings_model.dart';
+
+
+import 'data/database/ride_database.dart';
 import 'data/database/settings_database.dart';
+
+
+import 'services/notifications/notification_service.dart';
+import 'services/app_state_provider.dart';
+
+
+import 'screens/main_navigation.dart';
+
+
+
+
 
 
 Future<void> main() async {
 
 
-  WidgetsFlutterBinding.ensureInitialized();
+
+WidgetsFlutterBinding.ensureInitialized();
 
 
 
-  // Initialize Local Database
 
-  await Hive.initFlutter();
-  Hive.registerAdapter(
+
+// Hive Initialize
+
+await Hive.initFlutter();
+
+
+
+
+
+// Register Hive Adapters
+
+Hive.registerAdapter(
+
 RideModelAdapter()
+
 );
+
 
 
 Hive.registerAdapter(
+
 SettingsModelAdapter()
+
 );
 
 
-await RideDatabase.init();
+
+
+
+
+// Database Initialize
+
+await RideDatabase.initialize();
+
+
 await SettingsDatabase.initialize();
 
 
-  runApp(
 
-    const RideBotApp()
 
-  );
+
+
+// Notification Initialize
+
+await NotificationService.initialize();
+
+
+
+
+
+
+final appState =
+
+AppStateProvider();
+
+
+
+await appState.initialize();
+
+
+
+
+
+
+
+runApp(
+
+
+
+ChangeNotifierProvider.value(
+
+
+
+value:
+
+appState,
+
+
+
+child:
+
+const RideBotApp(),
+
+
+
+),
+
+
+
+);
+
 
 
 }
@@ -48,67 +130,134 @@ await SettingsDatabase.initialize();
 
 
 
+
+
+
+
 class RideBotApp extends StatelessWidget {
 
 
-  const RideBotApp({
-    super.key
-  });
+
+const RideBotApp({
+
+super.key
+
+});
 
 
 
-  @override
-  Widget build(BuildContext context) {
-
-
-    return MultiProvider(
-
-
-      providers: [
-
-
-        ChangeNotifierProvider(
-
-          create: (_) => AppStateProvider(),
-
-        ),
-
-
-      ],
 
 
 
-      child: MaterialApp(
 
+@override
 
-        debugShowCheckedModeBanner: false,
-
-
-        title: "RideBot Pro",
+Widget build(BuildContext context) {
 
 
 
-        theme: AppTheme.lightTheme,
-
-
-        darkTheme: AppTheme.darkTheme,
-
-
-        themeMode: ThemeMode.system,
+return MaterialApp(
 
 
 
-        home: const MainNavigation(),
+debugShowCheckedModeBanner:
+
+false,
 
 
 
-      ),
+title:
+
+"RideBot Pro",
 
 
-    );
 
 
-  }
+
+
+theme:
+
+ThemeData(
+
+
+
+useMaterial3:
+
+true,
+
+
+
+colorSchemeSeed:
+
+Colors.blue,
+
+
+
+brightness:
+
+Brightness.light,
+
+
+
+),
+
+
+
+
+
+
+darkTheme:
+
+ThemeData(
+
+
+
+useMaterial3:
+
+true,
+
+
+
+colorSchemeSeed:
+
+Colors.blue,
+
+
+
+brightness:
+
+Brightness.dark,
+
+
+
+),
+
+
+
+
+
+
+themeMode:
+
+ThemeMode.system,
+
+
+
+
+
+
+home:
+
+const MainNavigation(),
+
+
+
+);
+
+
+
+}
+
 
 
 }
