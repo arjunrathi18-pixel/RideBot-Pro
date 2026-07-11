@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 
 
 import 'dashboard_screen.dart';
-
-import 'automation_screen.dart';
-
 import 'history_screen.dart';
-
+import 'automation_screen.dart';
 import 'settings_screen.dart';
 
 
@@ -42,6 +39,7 @@ State<MainNavigation> createState()
 
 
 
+
 class _MainNavigationState
 
 extends State<MainNavigation>{
@@ -58,23 +56,23 @@ int currentIndex = 0;
 
 
 
-final List<Widget> pages = const [
+final List<Widget> screens = [
 
 
 
-DashboardScreen(),
+const DashboardScreen(),
 
 
 
-AutomationScreen(),
+const HistoryScreen(),
 
 
 
-HistoryScreen(),
+const AutomationScreen(),
 
 
 
-SettingsScreen(),
+const SettingsScreen(),
 
 
 
@@ -97,11 +95,9 @@ return Scaffold(
 
 
 
-
 body:
 
-pages[currentIndex],
-
+screens[currentIndex],
 
 
 
@@ -117,8 +113,6 @@ NavigationBar(
 selectedIndex:
 
 currentIndex,
-
-
 
 
 
@@ -147,9 +141,7 @@ currentIndex = index;
 
 
 
-destinations:
-
-const [
+destinations:[
 
 
 
@@ -161,23 +153,23 @@ NavigationDestination(
 
 icon:
 
-Icon(
+Icon(Icons.dashboard_outlined),
 
-Icons.dashboard
 
-),
+
+selectedIcon:
+
+Icon(Icons.dashboard),
 
 
 
 label:
 
-"Dashboard"
+"Dashboard",
 
 
 
 ),
-
-
 
 
 
@@ -189,23 +181,23 @@ NavigationDestination(
 
 icon:
 
-Icon(
+Icon(Icons.history_outlined),
 
-Icons.smart_toy
 
-),
+
+selectedIcon:
+
+Icon(Icons.history),
 
 
 
 label:
 
-"Automation"
+"History",
 
 
 
 ),
-
-
 
 
 
@@ -217,23 +209,23 @@ NavigationDestination(
 
 icon:
 
-Icon(
+Icon(Icons.smart_toy_outlined),
 
-Icons.history
 
-),
+
+selectedIcon:
+
+Icon(Icons.smart_toy),
 
 
 
 label:
 
-"History"
+"Automation",
 
 
 
 ),
-
-
 
 
 
@@ -245,17 +237,19 @@ NavigationDestination(
 
 icon:
 
-Icon(
+Icon(Icons.settings_outlined),
 
-Icons.settings
 
-),
+
+selectedIcon:
+
+Icon(Icons.settings),
 
 
 
 label:
 
-"Settings"
+"Settings",
 
 
 
@@ -273,15 +267,11 @@ label:
 
 
 
-
-
 );
 
 
 
 }
-
-
 
 
 
