@@ -6,18 +6,28 @@ import '../services/app_state_provider.dart';
 
 
 
+
+
 class SettingsScreen extends StatelessWidget {
 
 
+
 const SettingsScreen({
+
 super.key
+
 });
 
 
 
 
+
+
+
 @override
+
 Widget build(BuildContext context){
+
 
 
 final app =
@@ -26,23 +36,38 @@ context.watch<AppStateProvider>();
 
 
 
+
+
+final settings =
+
+app.settings;
+
+
+
+
+
+
+
 return Scaffold(
 
 
 
-appBar: AppBar(
+appBar:
+
+AppBar(
 
 title:
 
 const Text(
 
-"Settings"
+"RideBot Settings"
 
 ),
 
-centerTitle: true,
+centerTitle:true,
 
 ),
+
 
 
 
@@ -52,13 +77,15 @@ body:
 
 ListView(
 
+
+
 padding:
 
 const EdgeInsets.all(16),
 
 
 
-children: [
+children:[
 
 
 
@@ -70,6 +97,8 @@ child:
 
 SwitchListTile(
 
+
+
 title:
 
 const Text(
@@ -79,25 +108,30 @@ const Text(
 ),
 
 
+
 subtitle:
 
 const Text(
 
-"Automatically accept filtered rides"
+"Automatically accept matching rides"
 
 ),
 
 
 
+
 value:
 
-app.settings.autoAccept,
+settings.autoAccept,
+
+
 
 
 
 onChanged:
 
 (value){
+
 
 
 app.updateAutoAccept(
@@ -111,10 +145,13 @@ value
 },
 
 
+
 ),
 
 
+
 ),
+
 
 
 
@@ -122,9 +159,10 @@ value
 
 const SizedBox(
 
-height: 12
+height:12,
 
 ),
+
 
 
 
@@ -136,6 +174,8 @@ Card(
 child:
 
 ListTile(
+
+
 
 title:
 
@@ -151,25 +191,76 @@ subtitle:
 
 Text(
 
-"₹ ${app.settings.minimumFare}"
+"₹ ${settings.minimumFare}"
 
 ),
+
+
 
 
 
 trailing:
 
-const Icon(
+SizedBox(
 
-Icons.currency_rupee
+
+
+width:160,
+
+
+
+child:
+
+Slider(
+
+
+
+min:0,
+
+
+
+max:1000,
+
+
+
+value:
+
+settings.minimumFare,
+
+
+
+onChanged:
+
+(value){
+
+
+
+app.updateMinimumFare(
+
+value
+
+);
+
+
+
+},
+
+
 
 ),
 
 
+
 ),
 
 
+
 ),
+
+
+
+),
+
 
 
 
@@ -182,11 +273,13 @@ child:
 
 ListTile(
 
+
+
 title:
 
 const Text(
 
-"Minimum Earning / KM"
+"Minimum ₹ / KM"
 
 ),
 
@@ -196,25 +289,77 @@ subtitle:
 
 Text(
 
-"₹ ${app.settings.minimumPerKm} / KM"
+"₹ ${settings.minimumPerKm}"
 
 ),
+
+
 
 
 
 trailing:
 
-const Icon(
+SizedBox(
 
-Icons.route
+
+
+width:160,
+
+
+
+child:
+
+Slider(
+
+
+
+min:1,
+
+
+
+max:100,
+
+
+
+value:
+
+settings.minimumPerKm,
+
+
+
+onChanged:
+
+(value){
+
+
+
+app.updateMinimumPerKm(
+
+value
+
+);
+
+
+
+},
+
+
 
 ),
 
 
+
 ),
 
 
+
 ),
+
+
+
+),
+
+
 
 
 
@@ -225,6 +370,8 @@ Card(
 child:
 
 ListTile(
+
+
 
 title:
 
@@ -240,25 +387,76 @@ subtitle:
 
 Text(
 
-"${app.settings.maximumDistance} KM"
+"${settings.maximumDistance} KM"
 
 ),
+
+
 
 
 
 trailing:
 
-const Icon(
+SizedBox(
 
-Icons.location_on
+
+
+width:160,
+
+
+
+child:
+
+Slider(
+
+
+
+min:1,
+
+
+
+max:100,
+
+
+
+value:
+
+settings.maximumDistance,
+
+
+
+onChanged:
+
+(value){
+
+
+
+app.updateMaximumDistance(
+
+value
+
+);
+
+
+
+},
+
+
 
 ),
 
 
+
 ),
 
 
+
 ),
+
+
+
+),
+
 
 
 
@@ -270,6 +468,8 @@ Card(
 child:
 
 ListTile(
+
+
 
 title:
 
@@ -285,31 +485,107 @@ subtitle:
 
 Text(
 
-"${app.settings.acceptDelay} Seconds"
+"${settings.acceptDelay} seconds"
 
 ),
+
+
 
 
 
 trailing:
 
-const Icon(
+DropdownButton<int>(
 
-Icons.timer
+
+
+value:
+
+settings.acceptDelay,
+
+
+
+items:
+
+[1,2,3,5,10]
+
+.map((e){
+
+
+
+return DropdownMenuItem<int>(
+
+
+
+value:e,
+
+
+
+child:
+
+Text(
+
+"$e sec"
 
 ),
 
 
+
+);
+
+
+
+})
+
+.toList(),
+
+
+
+
+
+onChanged:
+
+(value){
+
+
+
+if(value != null){
+
+
+
+app.updateAcceptDelay(
+
+value
+
+);
+
+
+
+}
+
+
+
+},
+
+
+
 ),
 
 
+
 ),
+
+
+
+),
+
 
 
 
 
 
 ],
+
 
 
 ),
