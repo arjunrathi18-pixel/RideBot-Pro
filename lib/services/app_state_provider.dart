@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 
 import '../models/settings_model.dart';
 
+
 import '../data/database/settings_database.dart';
+
+
+import '../data/database/ride_database.dart';
+
+
+import 'automation/automation_service.dart';
 
 
 
@@ -13,32 +20,39 @@ class AppStateProvider extends ChangeNotifier {
 
 
 
-bool _automationRunning = false;
+SettingsModel settings =
 
-
-
-bool get automationRunning =>
-
-_automationRunning;
+const SettingsModel();
 
 
 
 
 
-
-
-SettingsModel _settings =
-
-SettingsModel();
+bool automationRunning = false;
 
 
 
+int totalRides = 0;
 
 
-SettingsModel get settings =>
+double totalEarning = 0;
 
-_settings;
 
+
+
+
+
+
+
+AppStateProvider(){
+
+
+
+initialize();
+
+
+
+}
 
 
 
@@ -51,9 +65,48 @@ Future<void> initialize() async {
 
 
 
-_settings =
+settings =
 
 SettingsDatabase.getSettings();
+
+
+
+
+
+await loadStats();
+
+
+
+
+
+notifyListeners();
+
+
+
+}
+
+
+
+
+
+
+
+
+Future<void> loadStats() async {
+
+
+
+totalRides =
+
+await RideDatabase.getTotalRides();
+
+
+
+
+
+totalEarning =
+
+await RideDatabase.getTotalEarning();
 
 
 
@@ -71,11 +124,19 @@ notifyListeners();
 
 
 
-void startAutomation(){
+Future<void> startAutomation() async {
 
 
 
-_automationRunning = true;
+automationRunning = true;
+
+
+
+await AutomationService.initialize(
+
+settings
+
+);
 
 
 
@@ -96,7 +157,7 @@ void stopAutomation(){
 
 
 
-_automationRunning = false;
+automationRunning = false;
 
 
 
@@ -105,65 +166,6 @@ notifyListeners();
 
 
 }
-
-
-
-
-
-
-
-
-
-void toggleAutomation(){
-
-
-
-_automationRunning =
-
-!_automationRunning;
-
-
-
-notifyListeners();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-Future<void> updateSettings(
-
-SettingsModel newSettings
-
-) async {
-
-
-
-_settings = newSettings;
-
-
-
-await SettingsDatabase.saveSettings(
-
-_settings
-
-);
-
-
-
-notifyListeners();
-
-
-
-}
-
 
 
 
@@ -180,11 +182,9 @@ bool value
 
 
 
-_settings =
+settings = settings.copyWith(
 
-_settings.copyWith(
-
-autoAccept: value,
+autoAccept:value
 
 );
 
@@ -211,11 +211,9 @@ double value
 
 
 
-_settings =
+settings = settings.copyWith(
 
-_settings.copyWith(
-
-minimumFare: value,
+minimumFare:value
 
 );
 
@@ -242,11 +240,9 @@ double value
 
 
 
-_settings =
+settings = settings.copyWith(
 
-_settings.copyWith(
-
-minimumPerKm: value,
+minimumPerKm:value
 
 );
 
@@ -273,11 +269,9 @@ double value
 
 
 
-_settings =
+settings = settings.copyWith(
 
-_settings.copyWith(
-
-maximumDistance: value,
+maximumDistance:value
 
 );
 
@@ -304,11 +298,9 @@ int value
 
 
 
-_settings =
+settings = settings.copyWith(
 
-_settings.copyWith(
-
-acceptDelay: value,
+acceptDelay:value
 
 );
 
@@ -327,14 +319,13 @@ await save();
 
 
 
-
 Future<void> save() async {
 
 
 
 await SettingsDatabase.saveSettings(
 
-_settings
+settings
 
 );
 
@@ -345,6 +336,11 @@ notifyListeners();
 
 
 }
+
+
+
+
+
 
 
 
