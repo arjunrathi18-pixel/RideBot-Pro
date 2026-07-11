@@ -1,55 +1,30 @@
-import 'package:hive/hive.dart';
+class RideModel {
 
 
-
-part 'ride_model.g.dart';
-
+  final int? id;
 
 
-
-
-@HiveType(typeId: 1)
-
-class RideModel extends HiveObject {
-
-
-
-  @HiveField(0)
   final String platform;
 
 
-
-  @HiveField(1)
   final double fare;
 
 
-
-  @HiveField(2)
   final double distance;
 
 
-
-  @HiveField(3)
   final double earningPerKm;
 
 
-
-  @HiveField(4)
   final String pickup;
 
 
-
-  @HiveField(5)
   final String dropLocation;
 
 
-
-  @HiveField(6)
   final String status;
 
 
-
-  @HiveField(7)
   final DateTime createdAt;
 
 
@@ -57,6 +32,9 @@ class RideModel extends HiveObject {
 
 
   RideModel({
+
+
+    this.id,
 
 
     required this.platform,
@@ -91,8 +69,143 @@ class RideModel extends HiveObject {
 
 
 
+  Map<String, dynamic> toMap(){
+
+
+
+    return {
+
+
+
+      'id': id,
+
+
+      'platform': platform,
+
+
+      'fare': fare,
+
+
+      'distance': distance,
+
+
+      'earningPerKm': earningPerKm,
+
+
+      'pickup': pickup,
+
+
+      'dropLocation': dropLocation,
+
+
+      'status': status,
+
+
+      'createdAt': createdAt.toIso8601String(),
+
+
+
+    };
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+  factory RideModel.fromMap(
+
+      Map<String, dynamic> map
+
+  ){
+
+
+
+    return RideModel(
+
+
+
+      id: map['id'],
+
+
+
+      platform:
+
+          map['platform'] ?? '',
+
+
+
+      fare:
+
+          (map['fare'] ?? 0).toDouble(),
+
+
+
+      distance:
+
+          (map['distance'] ?? 0).toDouble(),
+
+
+
+      earningPerKm:
+
+          (map['earningPerKm'] ?? 0).toDouble(),
+
+
+
+      pickup:
+
+          map['pickup'] ?? '',
+
+
+
+      dropLocation:
+
+          map['dropLocation'] ?? '',
+
+
+
+      status:
+
+          map['status'] ?? '',
+
+
+
+      createdAt:
+
+          DateTime.parse(
+
+            map['createdAt'],
+
+          ),
+
+
+
+    );
+
+
+
+  }
+
+
+
+
+
+
+
+
 
   RideModel copyWith({
+
+
+
+    int? id,
 
 
     String? platform,
@@ -119,11 +232,18 @@ class RideModel extends HiveObject {
     DateTime? createdAt,
 
 
-  }) {
+
+  }){
 
 
 
     return RideModel(
+
+
+
+      id:
+
+          id ?? this.id,
 
 
 
@@ -180,54 +300,6 @@ class RideModel extends HiveObject {
 
 
   }
-
-
-
-
-
-
-
-  Map<String,dynamic> toMap(){
-
-
-
-    return {
-
-
-
-      "platform": platform,
-
-
-      "fare": fare,
-
-
-      "distance": distance,
-
-
-      "earningPerKm": earningPerKm,
-
-
-      "pickup": pickup,
-
-
-      "dropLocation": dropLocation,
-
-
-      "status": status,
-
-
-      "createdAt": createdAt.toIso8601String(),
-
-
-
-    };
-
-
-  }
-
-
-
-
 
 
 
