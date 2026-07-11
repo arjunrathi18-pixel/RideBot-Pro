@@ -1,4 +1,4 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import '../../models/settings_model.dart';
@@ -11,9 +11,42 @@ class SettingsDatabase {
 
 
 
-static const String boxName =
+static const String autoAcceptKey =
 
-"settings";
+"autoAccept";
+
+
+
+static const String minimumFareKey =
+
+"minimumFare";
+
+
+
+static const String minimumPerKmKey =
+
+"minimumPerKm";
+
+
+
+static const String maximumDistanceKey =
+
+"maximumDistance";
+
+
+
+static const String acceptDelayKey =
+
+"acceptDelay";
+
+
+
+
+
+
+
+
+static late SharedPreferences _prefs;
 
 
 
@@ -25,32 +58,13 @@ static Future<void> initialize() async {
 
 
 
-if(!Hive.isBoxOpen(boxName)){
+_prefs =
 
+await SharedPreferences.getInstance();
 
-await Hive.openBox<SettingsModel>(
-
-boxName
-
-);
 
 
 }
-
-
-}
-
-
-
-
-
-
-
-
-static Box<SettingsModel> get _box =>
-
-
-Hive.box<SettingsModel>(boxName);
 
 
 
@@ -64,17 +78,61 @@ static SettingsModel getSettings(){
 
 
 
-if(_box.isEmpty){
-
-
-return SettingsModel();
-
-
-}
+return SettingsModel(
 
 
 
-return _box.getAt(0)!;
+autoAccept:
+
+_prefs.getBool(
+
+autoAcceptKey
+
+) ?? false,
+
+
+
+minimumFare:
+
+_prefs.getDouble(
+
+minimumFareKey
+
+) ?? 100,
+
+
+
+minimumPerKm:
+
+_prefs.getDouble(
+
+minimumPerKmKey
+
+) ?? 12,
+
+
+
+maximumDistance:
+
+_prefs.getDouble(
+
+maximumDistanceKey
+
+) ?? 40,
+
+
+
+acceptDelay:
+
+_prefs.getInt(
+
+acceptDelayKey
+
+) ?? 2,
+
+
+
+);
 
 
 
@@ -96,11 +154,81 @@ SettingsModel settings
 
 
 
-await _box.put(
+await _prefs.setBool(
 
-0,
 
-settings
+
+autoAcceptKey,
+
+
+
+settings.autoAccept,
+
+
+
+);
+
+
+
+await _prefs.setDouble(
+
+
+
+minimumFareKey,
+
+
+
+settings.minimumFare,
+
+
+
+);
+
+
+
+await _prefs.setDouble(
+
+
+
+minimumPerKmKey,
+
+
+
+settings.minimumPerKm,
+
+
+
+);
+
+
+
+await _prefs.setDouble(
+
+
+
+maximumDistanceKey,
+
+
+
+settings.maximumDistance,
+
+
+
+);
+
+
+
+await _prefs.setInt(
+
+
+
+acceptDelayKey,
+
+
+
+settings.acceptDelay,
+
+
 
 );
 
@@ -113,10 +241,15 @@ settings
 
 
 
-static Future<void> clear() async{
 
 
-await _box.clear();
+
+static Future<void> clearSettings() async {
+
+
+
+await _prefs.clear();
+
 
 
 }
