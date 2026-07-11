@@ -9,11 +9,15 @@ import '../data/database/ride_database.dart';
 
 
 
-class DashboardScreen extends StatelessWidget {
+
+class DashboardScreen extends StatefulWidget {
+
 
 
 const DashboardScreen({
+
 super.key
+
 });
 
 
@@ -21,6 +25,117 @@ super.key
 
 
 @override
+
+State<DashboardScreen> createState()
+
+=> _DashboardScreenState();
+
+
+
+}
+
+
+
+
+
+
+
+class _DashboardScreenState
+
+extends State<DashboardScreen>{
+
+
+
+
+
+int totalRides = 0;
+
+
+int acceptedRides = 0;
+
+
+double totalEarning = 0;
+
+
+
+
+
+@override
+
+void initState(){
+
+
+
+super.initState();
+
+
+loadData();
+
+
+
+}
+
+
+
+
+
+
+
+Future<void> loadData() async {
+
+
+
+final rides =
+
+await RideDatabase.getAllRides();
+
+
+
+final accepted =
+
+await RideDatabase.getAcceptedRides();
+
+
+
+final earning =
+
+await RideDatabase.getTotalEarning();
+
+
+
+
+
+
+setState((){
+
+
+
+totalRides = rides.length;
+
+
+
+acceptedRides = accepted.length;
+
+
+
+totalEarning = earning;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+@override
+
 Widget build(BuildContext context){
 
 
@@ -28,25 +143,6 @@ Widget build(BuildContext context){
 final app =
 
 context.watch<AppStateProvider>();
-
-
-
-
-final totalRides =
-
-RideDatabase.getTotalRides();
-
-
-
-final totalEarning =
-
-RideDatabase.getTotalEarning();
-
-
-
-final acceptedRides =
-
-RideDatabase.getAcceptedRides().length;
 
 
 
@@ -69,9 +165,13 @@ const Text(
 ),
 
 
-centerTitle: true,
+
+centerTitle:true,
+
+
 
 ),
+
 
 
 
@@ -84,10 +184,11 @@ RefreshIndicator(
 
 
 
-onRefresh: () async{
+onRefresh:
+
+loadData,
 
 
-},
 
 child:
 
@@ -109,9 +210,13 @@ children:[
 
 Card(
 
+
+
 child:
 
 Padding(
+
+
 
 padding:
 
@@ -123,11 +228,15 @@ child:
 
 Column(
 
+
+
 children:[
 
 
 
 Icon(
+
+
 
 app.automationRunning
 
@@ -143,7 +252,9 @@ Icons.pause_circle,
 
 size:
 
-60,
+70,
+
+
 
 ),
 
@@ -152,7 +263,7 @@ size:
 
 const SizedBox(
 
-height:10
+height:10,
 
 ),
 
@@ -161,6 +272,8 @@ height:10
 
 
 Text(
+
+
 
 app.automationRunning
 
@@ -180,7 +293,7 @@ const TextStyle(
 
 fontSize:20,
 
-fontWeight:FontWeight.bold
+fontWeight:FontWeight.bold,
 
 ),
 
@@ -197,11 +310,14 @@ fontWeight:FontWeight.bold
 ),
 
 
+
+),
+
+
+
 ),
 
 
-
-),
 
 
 
@@ -209,10 +325,9 @@ fontWeight:FontWeight.bold
 
 const SizedBox(
 
-height:16
+height:16,
 
 ),
-
 
 
 
@@ -228,45 +343,55 @@ children:[
 
 Expanded(
 
+
+
 child:
 
-_dashboardCard(
+_infoCard(
 
 "Total Rides",
 
 "$totalRides",
 
-Icons.motorcycle
+Icons.motorcycle,
 
 ),
 
+
+
 ),
+
 
 
 
 
 const SizedBox(
 
-width:10
+width:10,
 
 ),
+
 
 
 
 
 Expanded(
 
+
+
 child:
 
-_dashboardCard(
+_infoCard(
 
 "Accepted",
 
 "$acceptedRides",
 
-Icons.check_circle
+Icons.check_circle,
 
 ),
+
+
 
 ),
 
@@ -285,7 +410,7 @@ Icons.check_circle
 
 const SizedBox(
 
-height:16
+height:16,
 
 ),
 
@@ -293,75 +418,18 @@ height:16
 
 
 
-_dashboardCard(
+
+_infoCard(
 
 "Total Earnings",
 
-"₹ $totalEarning",
+"₹ ${totalEarning.toStringAsFixed(2)}",
 
-Icons.currency_rupee
-
-),
-
-
-
-
-
-const SizedBox(
-
-height:16
+Icons.currency_rupee,
 
 ),
 
 
-
-
-
-Card(
-
-child:
-
-ListTile(
-
-leading:
-
-const Icon(
-
-Icons.info
-
-),
-
-
-
-title:
-
-const Text(
-
-"Current Filters"
-
-),
-
-
-
-subtitle:
-
-Text(
-
-"Min Fare ₹${app.settings.minimumFare}\n"
-
-"Min ₹/KM ${app.settings.minimumPerKm}\n"
-
-"Max Distance ${app.settings.maximumDistance} KM"
-
-),
-
-
-
-),
-
-
-
-),
 
 
 
@@ -392,7 +460,8 @@ Text(
 
 
 
-Widget _dashboardCard(
+
+Widget _infoCard(
 
 String title,
 
@@ -411,6 +480,8 @@ return Card(
 child:
 
 Padding(
+
+
 
 padding:
 
@@ -434,17 +505,13 @@ Icon(icon),
 
 const SizedBox(
 
-height:8
+height:8,
 
 ),
 
 
 
-Text(
-
-title
-
-),
+Text(title),
 
 
 
@@ -458,7 +525,7 @@ const TextStyle(
 
 fontSize:22,
 
-fontWeight:FontWeight.bold
+fontWeight:FontWeight.bold,
 
 ),
 
