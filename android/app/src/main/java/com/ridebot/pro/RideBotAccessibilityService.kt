@@ -135,6 +135,57 @@ override fun onInterrupt(){
 Log.d(
 "RideBot",
 "Interrupted"
+  private fun clickAcceptButton(){
+
+
+val clicked =
+AccessibilityHelper.findAndClick(
+
+rootInActiveWindow,
+
+listOf(
+
+"accept",
+
+"confirm",
+
+"book",
+
+"ride now",
+
+"continue"
+
+)
+
+)
+
+
+
+if(clicked){
+
+
+Log.d(
+"RideBot",
+"Accept button clicked"
+)
+
+
+}
+
+else{
+
+
+Log.d(
+"RideBot",
+"Accept button not found"
+)
+
+
+}
+
+
+
+  }
 )
 
 
