@@ -2,36 +2,41 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 
 import '../../models/ride_model.dart';
-import '../../models/settings_model.dart';
-
-
-
-class RideDatabase {
-
-
-
-static const String rideBox =
-"rides";
-
-
-static const String settingsBox =
-"settings";
 
 
 
 
 
-static Future<void> init() async{
+class RideDatabaseService {
+
+
+
+static const String rideBoxName =
+
+"ride_history";
+
+
+
+
+
+
+
+
+static Future<void> initialize() async {
+
+
+
+if(!Hive.isBoxOpen(rideBoxName)){
 
 
 await Hive.openBox<RideModel>(
-rideBox
+
+rideBoxName
+
 );
 
 
-await Hive.openBox<SettingsModel>(
-settingsBox
-);
+}
 
 
 
@@ -43,20 +48,15 @@ settingsBox
 
 
 
-static Box<RideModel> get rides =>
+
+
+static Box<RideModel> get _rideBox =>
+
 
 Hive.box<RideModel>(
-rideBox
-);
 
+rideBoxName
 
-
-
-
-static Box<SettingsModel> get settings =>
-
-Hive.box<SettingsModel>(
-settingsBox
 );
 
 
@@ -65,17 +65,29 @@ settingsBox
 
 
 
-static Future<void> addRide(
+
+
+static Future<void> saveRide(
+
 RideModel ride
-) async{
+
+) async {
 
 
-await rides.add(
+
+await _rideBox.add(
+
 ride
+
 );
+
 
 
 }
+
+
+
+
 
 
 
@@ -84,7 +96,9 @@ ride
 static List<RideModel> getAllRides(){
 
 
-return rides.values.toList();
+
+return _rideBox.values.toList().reversed.toList();
+
 
 
 }
@@ -93,15 +107,68 @@ return rides.values.toList();
 
 
 
-static Future<void> saveSettings(
-SettingsModel model
-) async{
 
 
-await settings.put(
-0,
-model
-);
+
+
+static List<RideModel> getAcceptedRides(){
+
+
+
+return _rideBox.values
+
+.where(
+
+(ride)=>
+
+
+ride.status == "ACCEPTED"
+
+
+)
+
+.toList();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+static double getTotalEarning(){
+
+
+
+double total = 0;
+
+
+
+for(final ride in _rideBox.values){
+
+
+
+if(ride.status == "ACCEPTED"){
+
+
+total += ride.fare;
+
+
+}
+
+
+
+}
+
+
+
+return total;
+
 
 
 }
@@ -110,24 +177,37 @@ model
 
 
 
-static SettingsModel getSettings(){
 
 
-if(settings.isEmpty){
 
 
-return SettingsModel();
+static int getTotalRides(){
 
 
-}
 
+return _rideBox.length;
 
-return settings.getAt(0)!;
 
 
 }
 
 
+
+
+
+
+
+
+
+static Future<void> clearHistory() async {
+
+
+
+await _rideBox.clear();
+
+
+
+}
 
 
 
