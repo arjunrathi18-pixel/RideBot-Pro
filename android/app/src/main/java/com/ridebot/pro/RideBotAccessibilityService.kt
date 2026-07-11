@@ -8,313 +8,470 @@ import android.view.accessibility.AccessibilityNodeInfo
 
 
 
+
+
 class RideBotAccessibilityService :
+
     AccessibilityService() {
 
 
 
-    companion object {
+companion object {
 
 
-        var instance:
-        RideBotAccessibilityService? = null
 
+var instance:
 
-    }
+RideBotAccessibilityService? = null
 
 
 
+}
 
 
-    override fun onServiceConnected() {
 
 
-        super.onServiceConnected()
 
 
-        instance = this
 
+override fun onServiceConnected(){
 
-        Log.d(
-            "RideBot",
-            "Accessibility Service Connected"
-        )
 
 
-    }
+super.onServiceConnected()
 
 
 
+instance = this
 
 
 
-    override fun onAccessibilityEvent(
-        event: AccessibilityEvent?
-    ) {
+Log.d(
 
+"RideBot",
 
-        try {
+"Accessibility Connected"
 
+)
 
-            val root =
-                rootInActiveWindow
-                ?: return
 
 
+}
 
-            val screenText =
-                readText(root)
 
 
 
-            if(screenText.isNotEmpty()){
 
 
-                val fare =
-                    RideExtractor.extractFare(
-                        screenText
-                    )
 
 
+override fun onAccessibilityEvent(
 
-                val distance =
-                    RideExtractor.extractDistance(
-                        screenText
-                    )
+event: AccessibilityEvent?
 
+){
 
 
-                if(
-                    fare > 0 &&
-                    distance > 0
-                ){
 
+try {
 
 
-                    Log.d(
-                        "RideBot",
-                        "Ride Found Fare=$fare Distance=$distance"
-                    )
 
+val root =
 
+rootInActiveWindow
 
-                    RideBotBridge.sendRideData(
+?: return
 
-                        fare,
 
-                        distance,
 
-                        screenText
 
-                    )
 
+val screenText =
 
+readNodeText(root)
 
-                }
 
 
 
-            }
 
+if(screenText.isNotEmpty()){
 
 
-        }
 
-        catch(e: Exception){
+Log.d(
 
+"RideBot",
 
-            Log.e(
+screenText
 
-                "RideBot",
+)
 
-                "Error: ${e.message}"
 
-            )
 
 
-        }
 
+val fare =
 
+extractFare(screenText)
 
-    }
 
 
 
 
+val distance =
 
+extractDistance(screenText)
 
 
 
-    private fun readText(
-        node: AccessibilityNodeInfo
-    ): String {
 
 
 
-        val builder =
-            StringBuilder()
 
 
+if(fare > 0 && distance > 0){
 
-        if(node.text != null){
 
 
-            builder.append(
-                node.text
-            )
 
 
-            builder.append(" ")
+RideBotBridge.sendRideData(
 
 
-        }
 
+fare,
 
 
 
-        for(i in 0 until node.childCount){
+distance,
 
 
-            val child =
-                node.getChild(i)
 
+screenText
 
 
-            if(child != null){
 
+)
 
-                builder.append(
-                    readText(child)
-                )
 
 
-            }
 
 
-        }
+}
 
 
 
-        return builder.toString()
+}
 
 
 
-    }
 
 
+}
 
+catch(e:Exception){
 
 
 
+Log.e(
 
+"RideBot",
 
-    fun clickAcceptButton(){
+e.message ?: "Error"
 
+)
 
 
-        val clicked =
-            AccessibilityHelper.findAndClick(
 
-                rootInActiveWindow,
+}
 
-                listOf(
 
-                    "accept",
 
-                    "confirm",
+}
 
-                    "book",
 
-                    "ride now",
 
-                    "continue"
 
-                )
 
-            )
 
 
 
 
-        if(clicked){
+private fun readNodeText(
 
+node: AccessibilityNodeInfo
 
-            Log.d(
+): String {
 
-                "RideBot",
 
-                "Accept button clicked"
 
-            )
+val builder =
 
+StringBuilder()
 
-        }
 
-        else{
 
 
-            Log.d(
 
-                "RideBot",
 
-                "Accept button not found"
+if(node.text != null){
 
-            )
 
 
-        }
+builder.append(
 
+node.text
 
+)
 
-    }
+builder.append(" ")
 
 
 
+}
 
 
 
 
 
-    override fun onInterrupt(){
 
 
-        Log.d(
 
-            "RideBot",
+for(i in 0 until node.childCount){
 
-            "Service Interrupted"
 
-        )
 
+val child =
 
-    }
+node.getChild(i)
 
 
 
+if(child != null){
 
 
 
+builder.append(
 
+readNodeText(child)
 
-    override fun onDestroy(){
+)
 
 
-        instance = null
 
+}
 
-        Log.d(
 
-            "RideBot",
 
-            "Service Destroyed"
+}
 
-        )
 
 
-        super.onDestroy()
 
 
-    }
+
+return builder.toString()
+
+
+
+}
+
+
+
+
+
+
+
+
+
+private fun extractFare(
+
+text:String
+
+):Double {
+
+
+
+val regex =
+
+Regex(
+
+"\\d+(\\.\\d+)?"
+
+)
+
+
+
+val value =
+
+regex.find(text)
+
+
+
+return value
+
+?.value
+
+?.toDoubleOrNull()
+
+?:0.0
+
+
+
+}
+
+
+
+
+
+
+
+
+
+private fun extractDistance(
+
+text:String
+
+):Double {
+
+
+
+val regex =
+
+Regex(
+
+"(\\d+(\\.\\d+)?)\\s?(km|KM)"
+
+)
+
+
+
+
+
+val value =
+
+regex.find(text)
+
+
+
+
+
+return value
+
+?.groupValues?.get(1)
+
+?.toDoubleOrNull()
+
+?:0.0
+
+
+
+}
+
+
+
+
+
+
+
+
+
+fun clickAcceptButton(){
+
+
+
+val clicked =
+
+AccessibilityHelper.findAndClick(
+
+
+
+rootInActiveWindow,
+
+
+
+listOf(
+
+
+
+"accept",
+
+"confirm",
+
+"book",
+
+"continue",
+
+"ride now"
+
+
+
+)
+
+
+
+)
+
+
+
+
+
+Log.d(
+
+"RideBot",
+
+"Accept Click: $clicked"
+
+)
+
+
+
+}
+
+
+
+
+
+
+
+
+override fun onInterrupt(){
+
+
+
+Log.d(
+
+"RideBot",
+
+"Interrupted"
+
+)
+
+
+
+}
+
+
+
+
+
+
+
+
+override fun onDestroy(){
+
+
+
+instance = null
+
+
+
+super.onDestroy()
+
+
+
+}
 
 
 
