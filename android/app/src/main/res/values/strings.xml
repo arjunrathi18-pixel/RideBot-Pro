@@ -9,7 +9,7 @@
 
 
     <string name="accessibility_service_description">
-        RideBot Pro uses accessibility service to detect ride information and perform automated actions.
+        RideBot Pro accessibility service reads ride information to help automate ride management.
     </string>
 
 
