@@ -147,7 +147,7 @@ await acceptRide();
 
 
 
-await RideDatabaseService.saveRide(
+await RideDatabase.saveRide(
 
 ride.copyWith(
 
