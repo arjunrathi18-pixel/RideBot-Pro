@@ -1,6 +1,10 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
 
 import '../../models/ride_model.dart';
+
+
 
 
 
@@ -8,7 +12,15 @@ class RideDatabase {
 
 
 
-static const String rideBoxName = "ride_history";
+static Database? _database;
+
+
+
+
+
+static const String tableName = "rides";
+
+
 
 
 
@@ -17,12 +29,135 @@ static const String rideBoxName = "ride_history";
 static Future<void> initialize() async {
 
 
-if(!Hive.isBoxOpen(rideBoxName)){
+
+_database ??=
+
+await _initDatabase();
 
 
-await Hive.openBox<RideModel>(
 
-rideBoxName
+}
+
+
+
+
+
+
+
+
+static Future<Database> _initDatabase() async {
+
+
+
+final path =
+
+join(
+
+await getDatabasesPath(),
+
+"ridebot.db"
+
+);
+
+
+
+
+
+return await openDatabase(
+
+
+
+path,
+
+
+
+version: 1,
+
+
+
+onCreate: (db, version) async {
+
+
+
+await db.execute('''
+
+
+
+CREATE TABLE $tableName (
+
+
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+
+
+platform TEXT,
+
+
+
+fare REAL,
+
+
+
+distance REAL,
+
+
+
+earningPerKm REAL,
+
+
+
+pickup TEXT,
+
+
+
+dropLocation TEXT,
+
+
+
+status TEXT,
+
+
+
+createdAt TEXT
+
+
+
+)
+
+
+
+''');
+
+
+
+},
+
+
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+static Database get database {
+
+
+
+if(_database == null){
+
+
+throw Exception(
+
+"Database not initialized"
 
 );
 
@@ -30,48 +165,13 @@ rideBoxName
 }
 
 
-}
 
-
-
-
-
-
-
-
-static Box<RideModel> get _box =>
-
-
-Hive.box<RideModel>(
-
-rideBoxName
-
-);
-
-
-
-
-
-
-
-
-static Future<void> addRide(
-
-RideModel ride
-
-) async {
-
-
-
-await _box.add(
-
-ride
-
-);
+return _database!;
 
 
 
 }
+
 
 
 
@@ -88,28 +188,25 @@ RideModel ride
 
 
 
-await addRide(ride);
-
-
-}
+await database.insert(
 
 
 
+tableName,
 
 
 
+ride.toMap(),
 
 
-static List<RideModel> getAllRides(){
+
+conflictAlgorithm:
+
+ConflictAlgorithm.replace,
 
 
-return _box.values
 
-.toList()
-
-.reversed
-
-.toList();
+);
 
 
 
@@ -122,15 +219,38 @@ return _box.values
 
 
 
-static List<RideModel> getAcceptedRides(){
+
+static Future<List<RideModel>> getAllRides() async {
 
 
 
-return _box.values
+final result =
 
-.where(
+await database.query(
 
-(ride)=>ride.status=="ACCEPTED"
+
+
+tableName,
+
+
+
+orderBy:
+
+"id DESC",
+
+
+
+);
+
+
+
+
+
+return result
+
+.map(
+
+(e)=>RideModel.fromMap(e)
 
 )
 
@@ -147,23 +267,54 @@ return _box.values
 
 
 
-static double getTotalEarning(){
+
+static Future<List<RideModel>> getAcceptedRides() async {
 
 
 
-double total = 0;
+final result =
+
+await database.query(
 
 
 
-for(final ride in _box.values){
+tableName,
 
 
 
-if(ride.status=="ACCEPTED"){
+where:
+
+"status = ?",
 
 
 
-total += ride.fare;
+whereArgs:
+
+["ACCEPTED"],
+
+
+
+orderBy:
+
+"id DESC",
+
+
+
+);
+
+
+
+
+
+return result
+
+.map(
+
+(e)=>RideModel.fromMap(e)
+
+)
+
+.toList();
 
 
 
@@ -171,32 +322,98 @@ total += ride.fare;
 
 
 
+
+
+
+
+
+
+static Future<double> getTotalEarning() async {
+
+
+
+final result =
+
+await database.rawQuery(
+
+
+
+'''
+
+SELECT SUM(fare) as total
+
+FROM $tableName
+
+WHERE status = ?
+
+''',
+
+
+
+["ACCEPTED"],
+
+
+
+);
+
+
+
+
+
+return
+
+(result.first["total"] ?? 0)
+
+as double;
+
+
+
 }
 
 
 
-return total;
+
+
+
+
+
+
+static Future<int> getTotalRides() async {
+
+
+
+final result =
+
+await database.rawQuery(
+
+
+
+'''
+
+SELECT COUNT(*) as total
+
+FROM $tableName
+
+''',
+
+
+
+);
+
+
+
+
+
+return
+
+(result.first["total"] ?? 0)
+
+as int;
 
 
 
 }
 
-
-
-
-
-
-
-
-static int getTotalRides(){
-
-
-
-return _box.length;
-
-
-
-}
 
 
 
@@ -209,7 +426,11 @@ static Future<void> clearHistory() async {
 
 
 
-await _box.clear();
+await database.delete(
+
+tableName
+
+);
 
 
 
