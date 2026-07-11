@@ -4,67 +4,70 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
+import 'data/database/ride_database.dart';
+import 'data/database/settings_database.dart';
+
+import 'services/notifications/notification_service.dart';
 import 'services/app_state_provider.dart';
+
 import 'screens/main_navigation.dart';
 
 
 
 
 
-void main() {
+void main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
 
 
 
-  FlutterError.onError = (FlutterErrorDetails details) {
-
-    FlutterError.presentError(details);
-
-  };
+  runZonedGuarded(() async {
 
 
 
-  runZonedGuarded(
+    await RideDatabase.initialize();
 
 
-    () {
+
+    await SettingsDatabase.initialize();
 
 
-      runApp(
 
-        const RideBotApp(),
-
-      );
+    await NotificationService.initialize();
 
 
-    },
 
 
-    (error, stackTrace) {
+    runApp(
+
+      const RideBotApp(),
+
+    );
 
 
-      runApp(
 
-        ErrorApp(
-
-          error: error.toString(),
-
-        ),
-
-      );
+  }, (error, stackTrace) {
 
 
-    },
+
+    runApp(
+
+      ErrorApp(
+
+        error: error.toString(),
+
+      ),
+
+    );
 
 
-  );
+  });
 
 
 
 }
-
 
 
 
@@ -83,10 +86,9 @@ class RideBotApp extends StatelessWidget {
 
 
 
-
-
   @override
   Widget build(BuildContext context) {
+
 
 
     return ChangeNotifierProvider(
@@ -99,60 +101,24 @@ class RideBotApp extends StatelessWidget {
       child: MaterialApp(
 
 
-        debugShowCheckedModeBanner: false,
+
+        debugShowCheckedModeBanner:false,
 
 
 
-        title: "RideBot Pro",
+        title:"RideBot Pro",
 
 
 
-        theme: ThemeData(
+        theme:ThemeData(
 
-
-          useMaterial3: true,
-
-
-          colorScheme: ColorScheme.fromSeed(
-
-            seedColor: Colors.blue,
-
-          ),
-
+          useMaterial3:true,
 
         ),
 
 
 
-        home: const MainNavigation(),
-
-
-
-
-
-        builder: (context, child) {
-
-
-
-          ErrorWidget.builder = (FlutterErrorDetails error) {
-
-
-
-            return ErrorScreen(
-
-              error: error.exception.toString(),
-
-            );
-
-
-          };
-
-
-
-          return child!;
-
-
-        },
+        home:const MainNavigation(),
 
 
 
@@ -163,14 +129,11 @@ class RideBotApp extends StatelessWidget {
     );
 
 
-
   }
 
 
 
 }
-
-
 
 
 
@@ -184,7 +147,6 @@ class ErrorApp extends StatelessWidget {
   final String error;
 
 
-
   const ErrorApp({
 
     super.key,
@@ -195,165 +157,49 @@ class ErrorApp extends StatelessWidget {
 
 
 
-
-
   @override
   Widget build(BuildContext context) {
+
 
 
     return MaterialApp(
 
 
-      debugShowCheckedModeBanner: false,
+      home:Scaffold(
 
 
-      home: ErrorScreen(
+        backgroundColor:Colors.red,
 
-        error: error,
 
-      ),
 
+        body:SafeArea(
 
-    );
 
 
-  }
+          child:Padding(
 
 
-}
 
+            padding:const EdgeInsets.all(20),
 
 
 
+            child:Text(
 
 
+              "RIDEBOT ERROR\n\n$error",
 
 
 
-class ErrorScreen extends StatelessWidget {
+              style:const TextStyle(
 
 
-  final String error;
 
+                color:Colors.white,
 
+                fontSize:18,
 
-  const ErrorScreen({
-
-    super.key,
-
-    required this.error,
-
-  });
-
-
-
-
-
-  @override
-  Widget build(BuildContext context) {
-
-
-    return Scaffold(
-
-
-      backgroundColor: Colors.red,
-
-
-
-      body: SafeArea(
-
-
-
-        child: Padding(
-
-
-
-          padding: const EdgeInsets.all(20),
-
-
-
-          child: SingleChildScrollView(
-
-
-
-            child: Column(
-
-
-
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-
-
-              children: [
-
-
-
-                const Text(
-
-
-                  "RIDE BOT ERROR",
-
-
-
-                  style: TextStyle(
-
-
-
-                    color: Colors.white,
-
-
-
-                    fontSize: 28,
-
-
-
-                    fontWeight: FontWeight.bold,
-
-
-
-                  ),
-
-
-
-                ),
-
-
-
-
-                const SizedBox(height: 20),
-
-
-
-
-                Text(
-
-
-
-                  error,
-
-
-
-                  style: const TextStyle(
-
-
-
-                    color: Colors.white,
-
-
-
-                    fontSize: 16,
-
-
-
-                  ),
-
-
-
-                ),
-
-
-
-              ],
+              ),
 
 
 
@@ -374,7 +220,6 @@ class ErrorScreen extends StatelessWidget {
 
 
     );
-
 
 
   }
