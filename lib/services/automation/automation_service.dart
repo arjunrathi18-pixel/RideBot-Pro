@@ -7,7 +7,7 @@ import '../../models/settings_model.dart';
 
 import '../filter/filter_engine.dart';
 
-import '../database/ride_database_service.dart';
+import '../../data/database/ride_database.dart';
 
 
 
