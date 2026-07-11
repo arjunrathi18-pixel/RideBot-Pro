@@ -1,88 +1,132 @@
 import 'package:flutter/services.dart';
 
+
 import '../../models/ride_model.dart';
-import '../../services/filter/filter_engine.dart';
+
 import '../../models/settings_model.dart';
+
+import '../filter/filter_engine.dart';
+
+import '../database/ride_database_service.dart';
+
+
+
 
 
 class AutomationService {
 
 
 
-static const channel =
-MethodChannel(
-'ridebot/automation'
-);
+static const MethodChannel _channel =
+
+    MethodChannel(
+      'ridebot/automation'
+    );
 
 
 
 
 
-static void start(){
+
+
+static Future<void> initialize(
+
+SettingsModel settings
+
+) async {
 
 
 
-channel.setMethodCallHandler(
+_channel.setMethodCallHandler(
 
-(call) async{
+(call) async {
 
 
-if(call.method=="ride_detected"){
+
+switch(call.method){
+
+
+
+case "ride_detected":
+
 
 
 final data =
+
 call.arguments;
 
 
 
 final ride =
+
 RideModel(
 
-platform:"Unknown",
 
-fare:data["fare"],
+platform:
 
-distance:data["distance"],
+"Detected App",
+
+
+
+fare:
+
+(data["fare"] ?? 0)
+
+.toDouble(),
+
+
+
+distance:
+
+(data["distance"] ?? 0)
+
+.toDouble(),
+
+
 
 earningPerKm:
-data["fare"] /
-data["distance"],
 
-pickup:data["pickup"],
 
-dropLocation:"",
+(data["fare"] ?? 0)
 
-status:"DETECTED",
+/
+
+(data["distance"] ?? 1),
+
+
+
+pickup:
+
+data["pickup"] ?? "",
+
+
+
+dropLocation:
+
+"",
+
+
+
+status:
+
+"DETECTED",
+
+
 
 createdAt:
-DateTime.now()
+
+DateTime.now(),
+
+
 
 );
 
 
 
-// next step:
-// save in database
-// apply filters
 
 
+bool accepted =
 
-}
-
-
-return null;
-  final settings = SettingsModel(
-
-autoAccept:true,
-
-minimumFare:100,
-
-minimumPerKm:12,
-
-maximumDistance:40,
-
-);
-  bool accepted =
 FilterEngine.checkRide(
 
 ride,
@@ -90,15 +134,31 @@ ride,
 settings
 
 );
-  if(accepted){
 
 
-print(
-"Ride Accepted"
+
+
+
+if(accepted){
+
+
+
+await acceptRide();
+
+
+
+await RideDatabaseService.saveRide(
+
+ride.copyWith(
+
+status:
+
+"ACCEPTED"
+
+)
+
 );
 
-
-// आगे Auto Click Function आएगा
 
 
 }
@@ -106,27 +166,65 @@ print(
 else{
 
 
-print(
-"Ride Rejected"
-  static Future<void> acceptRide() async{
+
+await RideDatabaseService.saveRide(
+
+ride.copyWith(
+
+status:
+
+"REJECTED"
+
+)
+
+);
 
 
-await channel.invokeMethod(
+
+}
+
+
+
+break;
+
+
+
+
+
+default:
+
+break;
+
+
+
+}
+
+
+
+}
+
+
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+static Future<void> acceptRide() async {
+
+
+
+await _channel.invokeMethod(
 
 "accept_ride"
-
-);
-
-
-  }
-);
-
-
-}
-
-
-}
-
 
 );
 
