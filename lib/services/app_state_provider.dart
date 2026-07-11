@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../models/settings_model.dart';
+
 
 
 class AppStateProvider extends ChangeNotifier {
 
 
 
-bool _automationRunning = false;
-
+bool _automationRunning=false;
 
 
 bool get automationRunning =>
-    _automationRunning;
+_automationRunning;
+
+
+
+SettingsModel settings =
+SettingsModel();
+
 
 
 
@@ -19,11 +26,29 @@ bool get automationRunning =>
 void toggleAutomation(){
 
 
-  _automationRunning =
-      !_automationRunning;
+_automationRunning =
+!_automationRunning;
 
 
-  notifyListeners();
+notifyListeners();
+
+
+}
+
+
+
+
+
+void updateSettings(
+SettingsModel newSettings
+){
+
+
+settings =
+newSettings;
+
+
+notifyListeners();
 
 
 }
@@ -34,12 +59,9 @@ void toggleAutomation(){
 
 void startAutomation(){
 
+_automationRunning=true;
 
-  _automationRunning = true;
-
-
-  notifyListeners();
-
+notifyListeners();
 
 }
 
@@ -49,12 +71,9 @@ void startAutomation(){
 
 void stopAutomation(){
 
+_automationRunning=false;
 
-  _automationRunning = false;
-
-
-  notifyListeners();
-
+notifyListeners();
 
 }
 
