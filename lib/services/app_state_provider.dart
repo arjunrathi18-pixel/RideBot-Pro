@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../models/settings_model.dart';
 
-
 import '../data/database/settings_database.dart';
 
 
@@ -27,15 +26,21 @@ _automationRunning;
 
 
 
+
 SettingsModel _settings =
 
 SettingsModel();
 
 
 
+
+
 SettingsModel get settings =>
 
 _settings;
+
+
+
 
 
 
@@ -65,34 +70,13 @@ notifyListeners();
 
 
 
-void toggleAutomation(){
-
-
-
-_automationRunning =
-
-!_automationRunning;
-
-
-
-notifyListeners();
-
-
-
-}
-
-
-
-
-
-
-
 
 void startAutomation(){
 
 
 
 _automationRunning = true;
+
 
 
 notifyListeners();
@@ -115,11 +99,37 @@ void stopAutomation(){
 _automationRunning = false;
 
 
+
 notifyListeners();
 
 
 
 }
+
+
+
+
+
+
+
+
+
+void toggleAutomation(){
+
+
+
+_automationRunning =
+
+!_automationRunning;
+
+
+
+notifyListeners();
+
+
+
+}
+
 
 
 
@@ -162,23 +172,25 @@ notifyListeners();
 
 
 
-void updateAutoAccept(
+Future<void> updateAutoAccept(
 
 bool value
 
-){
+) async {
 
 
 
-_settings.autoAccept = value;
+_settings =
+
+_settings.copyWith(
+
+autoAccept: value,
+
+);
 
 
 
-notifyListeners();
-
-
-
-save();
+await save();
 
 
 
@@ -191,23 +203,25 @@ save();
 
 
 
-void updateMinimumFare(
+Future<void> updateMinimumFare(
 
 double value
 
-){
+) async {
 
 
 
-_settings.minimumFare = value;
+_settings =
+
+_settings.copyWith(
+
+minimumFare: value,
+
+);
 
 
 
-notifyListeners();
-
-
-
-save();
+await save();
 
 
 
@@ -220,23 +234,25 @@ save();
 
 
 
-void updateMinimumPerKm(
+Future<void> updateMinimumPerKm(
 
 double value
 
-){
+) async {
 
 
 
-_settings.minimumPerKm = value;
+_settings =
+
+_settings.copyWith(
+
+minimumPerKm: value,
+
+);
 
 
 
-notifyListeners();
-
-
-
-save();
+await save();
 
 
 
@@ -249,23 +265,25 @@ save();
 
 
 
-void updateMaximumDistance(
+Future<void> updateMaximumDistance(
 
 double value
 
-){
+) async {
 
 
 
-_settings.maximumDistance = value;
+_settings =
+
+_settings.copyWith(
+
+maximumDistance: value,
+
+);
 
 
 
-notifyListeners();
-
-
-
-save();
+await save();
 
 
 
@@ -278,23 +296,25 @@ save();
 
 
 
-void updateAcceptDelay(
+Future<void> updateAcceptDelay(
 
 int value
 
-){
+) async {
 
 
 
-_settings.acceptDelay = value;
+_settings =
+
+_settings.copyWith(
+
+acceptDelay: value,
+
+);
 
 
 
-notifyListeners();
-
-
-
-save();
+await save();
 
 
 
@@ -317,6 +337,10 @@ await SettingsDatabase.saveSettings(
 _settings
 
 );
+
+
+
+notifyListeners();
 
 
 
