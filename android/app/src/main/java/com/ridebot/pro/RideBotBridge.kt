@@ -6,156 +6,176 @@ import io.flutter.plugin.common.MethodChannel
 
 
 
+
+
 object RideBotBridge {
 
 
 
-    private const val CHANNEL =
-        "ridebot/automation"
+private const val CHANNEL_NAME =
 
+"ridebot/automation"
 
 
-    private lateinit var channel:
-            MethodChannel
 
 
 
+private lateinit var channel: MethodChannel
 
 
-    fun initialize(
-        flutterEngine: FlutterEngine
-    ){
 
 
 
-        channel =
-            MethodChannel(
 
-                flutterEngine
-                    .dartExecutor
-                    .binaryMessenger,
+fun initialize(
 
-                CHANNEL
+flutterEngine: FlutterEngine
 
-            )
+){
 
 
 
+channel = MethodChannel(
 
 
-        channel.setMethodCallHandler{
 
-                call,
-                result ->
+flutterEngine.dartExecutor.binaryMessenger,
 
 
 
-            when(call.method){
+CHANNEL_NAME
 
 
 
-                "accept_ride" -> {
+)
 
 
 
-                    RideBotAccessibilityService
-                        .instance
-                        ?.clickAcceptButton()
 
 
 
-                    result.success(true)
 
+channel.setMethodCallHandler {
 
+call,
 
-                }
+result ->
 
 
 
 
 
-                "stop_service" -> {
 
+when(call.method){
 
 
-                    result.success(true)
 
+"accept_ride" -> {
 
 
-                }
 
+RideBotAccessibilityService
 
+.instance
 
+?.clickAcceptButton()
 
 
-                else -> {
 
+result.success(true)
 
 
-                    result.notImplemented()
 
+}
 
 
-                }
 
 
 
-            }
 
 
+else -> {
 
-        }
 
 
+result.notImplemented()
 
-    }
 
 
+}
 
 
 
+}
 
 
-    fun sendRideData(
 
-        fare: Double,
+}
 
-        distance: Double,
 
-        pickup: String
 
-    ){
+}
 
 
 
-        if(::channel.isInitialized){
 
 
 
-            channel.invokeMethod(
 
-                "ride_detected",
 
-                mapOf(
+fun sendRideData(
 
-                    "fare" to fare,
+fare: Double,
 
-                    "distance" to distance,
+distance: Double,
 
-                    "pickup" to pickup
+pickup: String
 
+){
 
-                )
 
-            )
 
+if(::channel.isInitialized){
 
 
-        }
 
+channel.invokeMethod(
 
 
-    }
+
+"ride_detected",
+
+
+
+mapOf(
+
+
+
+"fare" to fare,
+
+
+
+"distance" to distance,
+
+
+
+"pickup" to pickup
+
+
+
+)
+
+
+
+)
+
+
+
+}
+
+
+
+}
 
 
 
