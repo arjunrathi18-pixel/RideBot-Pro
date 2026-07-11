@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
 
+
 import 'dashboard_screen.dart';
+
 import 'automation_screen.dart';
+
+import 'history_screen.dart';
+
 import 'settings_screen.dart';
+
+
 
 
 
 class MainNavigation extends StatefulWidget {
 
 
+
 const MainNavigation({
+
 super.key
+
 });
 
 
 
+
+
 @override
+
 State<MainNavigation> createState()
+
 => _MainNavigationState();
+
 
 
 }
@@ -25,8 +40,13 @@ State<MainNavigation> createState()
 
 
 
-class _MainNavigationState 
+
+
+class _MainNavigationState
+
 extends State<MainNavigation>{
+
+
 
 
 
@@ -34,16 +54,28 @@ int currentIndex = 0;
 
 
 
-final pages = const [
+
+
+
+
+final List<Widget> pages = const [
+
 
 
 DashboardScreen(),
 
 
+
 AutomationScreen(),
 
 
+
+HistoryScreen(),
+
+
+
 SettingsScreen(),
+
 
 
 ];
@@ -52,70 +84,185 @@ SettingsScreen(),
 
 
 
+
+
+
 @override
+
 Widget build(BuildContext context){
+
 
 
 return Scaffold(
 
 
-body: pages[currentIndex],
+
+
+body:
+
+pages[currentIndex],
 
 
 
 
-bottomNavigationBar: NavigationBar(
 
 
-selectedIndex: currentIndex,
+
+bottomNavigationBar:
+
+NavigationBar(
 
 
-onDestinationSelected:(index){
+
+selectedIndex:
+
+currentIndex,
+
+
+
+
+
+onDestinationSelected:
+
+(index){
+
 
 
 setState((){
 
 
-currentIndex=index;
+
+currentIndex = index;
+
 
 
 });
+
 
 
 },
 
 
 
-destinations: const [
-
-
-NavigationDestination(
-
-icon: Icon(Icons.dashboard),
-
-label:"Dashboard"
-
-),
 
 
 
-NavigationDestination(
+destinations:
 
-icon: Icon(Icons.smart_toy),
+const [
 
-label:"Automation"
 
-),
 
 
 
 NavigationDestination(
 
-icon: Icon(Icons.settings),
 
-label:"Settings"
+
+icon:
+
+Icon(
+
+Icons.dashboard
 
 ),
+
+
+
+label:
+
+"Dashboard"
+
+
+
+),
+
+
+
+
+
+
+
+NavigationDestination(
+
+
+
+icon:
+
+Icon(
+
+Icons.smart_toy
+
+),
+
+
+
+label:
+
+"Automation"
+
+
+
+),
+
+
+
+
+
+
+
+NavigationDestination(
+
+
+
+icon:
+
+Icon(
+
+Icons.history
+
+),
+
+
+
+label:
+
+"History"
+
+
+
+),
+
+
+
+
+
+
+
+NavigationDestination(
+
+
+
+icon:
+
+Icon(
+
+Icons.settings
+
+),
+
+
+
+label:
+
+"Settings"
+
+
+
+),
+
+
+
 
 
 ],
@@ -126,10 +273,16 @@ label:"Settings"
 
 
 
+
+
 );
 
 
+
 }
+
+
+
 
 
 }
