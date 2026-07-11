@@ -108,6 +108,17 @@ else{
 
 print(
 "Ride Rejected"
+  static Future<void> acceptRide() async{
+
+
+await channel.invokeMethod(
+
+"accept_ride"
+
+);
+
+
+  }
 );
 
 
