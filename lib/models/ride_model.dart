@@ -1,305 +1,306 @@
 class RideModel {
 
 
-  final int? id;
 
+final int? id;
 
-  final String platform;
 
+final String platform;
 
-  final double fare;
 
+final double fare;
 
-  final double distance;
 
+final double distance;
 
-  final double earningPerKm;
 
+final double earningPerKm;
 
-  final String pickup;
 
+final String pickup;
 
-  final String dropLocation;
 
+final String dropLocation;
 
-  final String status;
 
+final String status;
 
-  final DateTime createdAt;
 
+final DateTime createdAt;
 
 
 
 
-  RideModel({
 
 
-    this.id,
 
+RideModel({
 
-    required this.platform,
+this.id,
 
+required this.platform,
 
-    required this.fare,
+required this.fare,
 
+required this.distance,
 
-    required this.distance,
+required this.earningPerKm,
 
+required this.pickup,
 
-    required this.earningPerKm,
+required this.dropLocation,
 
+required this.status,
 
-    required this.pickup,
+required this.createdAt,
 
+});
 
-    required this.dropLocation,
 
 
-    required this.status,
 
 
-    required this.createdAt,
 
 
-  });
 
+Map<String,dynamic> toMap(){
 
 
 
+return {
 
 
 
-  Map<String, dynamic> toMap(){
+'id': id,
 
 
+'platform': platform,
 
-    return {
 
+'fare': fare,
 
 
-      'id': id,
+'distance': distance,
 
 
-      'platform': platform,
+'earningPerKm': earningPerKm,
 
 
-      'fare': fare,
+'pickup': pickup,
 
 
-      'distance': distance,
+'dropLocation': dropLocation,
 
 
-      'earningPerKm': earningPerKm,
+'status': status,
 
 
-      'pickup': pickup,
+'createdAt': createdAt.toIso8601String(),
 
 
-      'dropLocation': dropLocation,
 
+};
 
-      'status': status,
 
 
-      'createdAt': createdAt.toIso8601String(),
+}
 
 
 
-    };
 
 
 
-  }
 
 
+factory RideModel.fromMap(
 
+Map<String,dynamic> map
 
+){
 
 
 
+return RideModel(
 
 
-  factory RideModel.fromMap(
 
-      Map<String, dynamic> map
+id:
 
-  ){
+map['id'],
 
 
 
-    return RideModel(
+platform:
 
+map['platform'] ?? "",
 
 
-      id: map['id'],
 
+fare:
 
+(map['fare'] ?? 0)
 
-      platform:
+.toDouble(),
 
-          map['platform'] ?? '',
 
 
+distance:
 
-      fare:
+(map['distance'] ?? 0)
 
-          (map['fare'] ?? 0).toDouble(),
+.toDouble(),
 
 
 
-      distance:
+earningPerKm:
 
-          (map['distance'] ?? 0).toDouble(),
+(map['earningPerKm'] ?? 0)
 
+.toDouble(),
 
 
-      earningPerKm:
 
-          (map['earningPerKm'] ?? 0).toDouble(),
+pickup:
 
+map['pickup'] ?? "",
 
 
-      pickup:
 
-          map['pickup'] ?? '',
+dropLocation:
 
+map['dropLocation'] ?? "",
 
 
-      dropLocation:
 
-          map['dropLocation'] ?? '',
+status:
 
+map['status'] ?? "",
 
 
-      status:
 
-          map['status'] ?? '',
+createdAt:
 
+DateTime.parse(
 
+map['createdAt']
 
-      createdAt:
+),
 
-          DateTime.parse(
 
-            map['createdAt'],
 
-          ),
+);
 
 
 
-    );
+}
 
 
 
-  }
 
 
 
 
 
 
+RideModel copyWith({
 
 
 
-  RideModel copyWith({
+int? id,
 
 
+String? platform,
 
-    int? id,
 
+double? fare,
 
-    String? platform,
 
+double? distance,
 
-    double? fare,
 
+double? earningPerKm,
 
-    double? distance,
 
+String? pickup,
 
-    double? earningPerKm,
 
+String? dropLocation,
 
-    String? pickup,
 
+String? status,
 
-    String? dropLocation,
 
+DateTime? createdAt,
 
-    String? status,
 
 
-    DateTime? createdAt,
+}){
 
 
 
-  }){
+return RideModel(
 
 
 
-    return RideModel(
+id:
 
+id ?? this.id,
 
 
-      id:
 
-          id ?? this.id,
+platform:
 
+platform ?? this.platform,
 
 
-      platform:
 
-          platform ?? this.platform,
+fare:
 
+fare ?? this.fare,
 
 
-      fare:
 
-          fare ?? this.fare,
+distance:
 
+distance ?? this.distance,
 
 
-      distance:
 
-          distance ?? this.distance,
+earningPerKm:
 
+earningPerKm ?? this.earningPerKm,
 
 
-      earningPerKm:
 
-          earningPerKm ?? this.earningPerKm,
+pickup:
 
+pickup ?? this.pickup,
 
 
-      pickup:
 
-          pickup ?? this.pickup,
+dropLocation:
 
+dropLocation ?? this.dropLocation,
 
 
-      dropLocation:
 
-          dropLocation ?? this.dropLocation,
+status:
 
+status ?? this.status,
 
 
-      status:
 
-          status ?? this.status,
+createdAt:
 
+createdAt ?? this.createdAt,
 
 
-      createdAt:
 
-          createdAt ?? this.createdAt,
+);
 
 
 
-    );
-
-
-
-  }
+}
 
 
 
