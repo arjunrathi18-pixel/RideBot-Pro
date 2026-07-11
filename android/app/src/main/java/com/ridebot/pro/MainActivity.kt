@@ -2,6 +2,7 @@ package com.ridebot.pro
 
 
 import io.flutter.embedding.android.FlutterActivity
+
 import io.flutter.embedding.engine.FlutterEngine
 
 
@@ -16,7 +17,7 @@ override fun configureFlutterEngine(
 
 flutterEngine: FlutterEngine
 
-){
+) {
 
 
 
@@ -25,8 +26,6 @@ super.configureFlutterEngine(
 flutterEngine
 
 )
-
-
 
 
 
