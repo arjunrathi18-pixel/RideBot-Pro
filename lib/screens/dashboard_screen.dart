@@ -4,14 +4,11 @@ import 'package:provider/provider.dart';
 
 import '../services/app_state_provider.dart';
 
-import '../data/database/ride_database.dart';
 
 
 
 
-
-class DashboardScreen extends StatefulWidget {
-
+class DashboardScreen extends StatelessWidget {
 
 
 const DashboardScreen({
@@ -19,115 +16,6 @@ const DashboardScreen({
 super.key
 
 });
-
-
-
-
-
-@override
-
-State<DashboardScreen> createState()
-
-=> _DashboardScreenState();
-
-
-
-}
-
-
-
-
-
-
-
-class _DashboardScreenState
-
-extends State<DashboardScreen>{
-
-
-
-
-
-int totalRides = 0;
-
-
-int acceptedRides = 0;
-
-
-double totalEarning = 0;
-
-
-
-
-
-@override
-
-void initState(){
-
-
-
-super.initState();
-
-
-loadData();
-
-
-
-}
-
-
-
-
-
-
-
-Future<void> loadData() async {
-
-
-
-final rides =
-
-await RideDatabase.getAllRides();
-
-
-
-final accepted =
-
-await RideDatabase.getAcceptedRides();
-
-
-
-final earning =
-
-await RideDatabase.getTotalEarning();
-
-
-
-
-
-
-setState((){
-
-
-
-totalRides = rides.length;
-
-
-
-acceptedRides = accepted.length;
-
-
-
-totalEarning = earning;
-
-
-
-});
-
-
-
-}
-
 
 
 
@@ -148,6 +36,7 @@ context.watch<AppStateProvider>();
 
 
 
+
 return Scaffold(
 
 
@@ -156,11 +45,13 @@ appBar:
 
 AppBar(
 
+
+
 title:
 
 const Text(
 
-"RideBot Pro Dashboard"
+"RideBot Pro"
 
 ),
 
@@ -177,22 +68,9 @@ centerTitle:true,
 
 
 
-
 body:
 
-RefreshIndicator(
-
-
-
-onRefresh:
-
-loadData,
-
-
-
-child:
-
-ListView(
+SingleChildScrollView(
 
 
 
@@ -202,7 +80,15 @@ const EdgeInsets.all(16),
 
 
 
+child:
+
+Column(
+
+
+
 children:[
+
+
 
 
 
@@ -226,7 +112,7 @@ const EdgeInsets.all(20),
 
 child:
 
-Column(
+Row(
 
 
 
@@ -234,38 +120,40 @@ children:[
 
 
 
-Icon(
+const Icon(
 
+Icons.smart_toy,
 
-
-app.automationRunning
-
-?
-
-Icons.play_circle
-
-:
-
-Icons.pause_circle,
-
-
-
-size:
-
-70,
-
-
+size:50,
 
 ),
-
 
 
 
 const SizedBox(
 
-height:10,
+width:20,
 
 ),
+
+
+
+
+Expanded(
+
+child:
+
+Column(
+
+
+
+crossAxisAlignment:
+
+CrossAxisAlignment.start,
+
+
+
+children:[
 
 
 
@@ -273,17 +161,15 @@ height:10,
 
 Text(
 
-
-
 app.automationRunning
 
 ?
 
-"Automation Running"
+"Automation Active"
 
 :
 
-"Automation Stopped",
+"Automation Off",
 
 
 
@@ -303,6 +189,40 @@ fontWeight:FontWeight.bold,
 
 
 
+
+
+const SizedBox(
+
+height:5,
+
+),
+
+
+
+
+
+const Text(
+
+"RideBot is monitoring rides"
+
+),
+
+
+
+
+
+],
+
+
+
+),
+
+
+
+),
+
+
+
 ],
 
 
@@ -328,6 +248,8 @@ const SizedBox(
 height:16,
 
 ),
+
+
 
 
 
@@ -341,19 +263,21 @@ children:[
 
 
 
+
+
 Expanded(
-
-
 
 child:
 
-_infoCard(
+_statsCard(
+
+context,
 
 "Total Rides",
 
-"$totalRides",
+app.totalRides.toString(),
 
-Icons.motorcycle,
+Icons.directions_car,
 
 ),
 
@@ -367,9 +291,10 @@ Icons.motorcycle,
 
 const SizedBox(
 
-width:10,
+width:12,
 
 ),
+
 
 
 
@@ -377,27 +302,90 @@ width:10,
 
 Expanded(
 
-
-
 child:
 
-_infoCard(
+_statsCard(
 
-"Accepted",
+context,
 
-"$acceptedRides",
+"Income",
 
-Icons.check_circle,
+"₹${app.totalEarning.toStringAsFixed(0)}",
+
+Icons.currency_rupee,
+
+),
+
+
 
 ),
 
 
-
-),
 
 
 
 ],
+
+
+
+),
+
+
+
+
+
+
+
+const SizedBox(
+
+height:16,
+
+),
+
+
+
+
+
+
+Card(
+
+child:
+
+ListTile(
+
+
+
+leading:
+
+const Icon(
+
+Icons.speed,
+
+),
+
+
+
+title:
+
+const Text(
+
+"Ride Filter"
+
+),
+
+
+
+subtitle:
+
+Text(
+
+"₹${app.settings.minimumPerKm}/KM minimum"
+
+),
+
+
+
+),
 
 
 
@@ -419,16 +407,57 @@ height:16,
 
 
 
-_infoCard(
+FilledButton.icon(
 
-"Total Earnings",
 
-"₹ ${totalEarning.toStringAsFixed(2)}",
 
-Icons.currency_rupee,
+icon:
+
+const Icon(
+
+Icons.play_arrow,
 
 ),
 
+
+
+label:
+
+Text(
+
+app.automationRunning
+
+?
+
+"Automation Running"
+
+:
+
+"Start Automation"
+
+),
+
+
+
+onPressed:
+
+(){
+
+
+
+if(!app.automationRunning){
+
+app.startAutomation();
+
+}
+
+
+
+},
+
+
+
+),
 
 
 
@@ -460,14 +489,15 @@ Icons.currency_rupee,
 
 
 
+Widget _statsCard(
 
-Widget _infoCard(
+BuildContext context,
 
 String title,
 
 String value,
 
-IconData icon
+IconData icon,
 
 ){
 
@@ -485,7 +515,7 @@ Padding(
 
 padding:
 
-const EdgeInsets.all(18),
+const EdgeInsets.all(16),
 
 
 
@@ -499,19 +529,25 @@ children:[
 
 
 
-Icon(icon),
+Icon(
 
+icon,
 
-
-const SizedBox(
-
-height:8,
+size:35,
 
 ),
 
 
 
-Text(title),
+
+
+const SizedBox(
+
+height:10,
+
+),
+
+
 
 
 
@@ -530,6 +566,14 @@ fontWeight:FontWeight.bold,
 ),
 
 ),
+
+
+
+
+
+Text(title),
+
+
 
 
 
