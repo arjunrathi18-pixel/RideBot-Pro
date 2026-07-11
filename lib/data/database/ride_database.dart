@@ -1,29 +1,20 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
-
 import '../../models/ride_model.dart';
 
 
 
-
-
-class RideDatabaseService {
-
-
-
-static const String rideBoxName =
-
-"ride_history";
+class RideDatabase {
 
 
 
+static const String rideBoxName = "ride_history";
 
 
 
 
 
 static Future<void> initialize() async {
-
 
 
 if(!Hive.isBoxOpen(rideBoxName)){
@@ -39,7 +30,6 @@ rideBoxName
 }
 
 
-
 }
 
 
@@ -49,8 +39,7 @@ rideBoxName
 
 
 
-
-static Box<RideModel> get _rideBox =>
+static Box<RideModel> get _box =>
 
 
 Hive.box<RideModel>(
@@ -66,8 +55,7 @@ rideBoxName
 
 
 
-
-static Future<void> saveRide(
+static Future<void> addRide(
 
 RideModel ride
 
@@ -75,7 +63,7 @@ RideModel ride
 
 
 
-await _rideBox.add(
+await _box.add(
 
 ride
 
@@ -92,12 +80,36 @@ ride
 
 
 
+static Future<void> saveRide(
+
+RideModel ride
+
+) async {
+
+
+
+await addRide(ride);
+
+
+}
+
+
+
+
+
+
+
 
 static List<RideModel> getAllRides(){
 
 
+return _box.values
 
-return _rideBox.values.toList().reversed.toList();
+.toList()
+
+.reversed
+
+.toList();
 
 
 
@@ -110,20 +122,15 @@ return _rideBox.values.toList().reversed.toList();
 
 
 
-
 static List<RideModel> getAcceptedRides(){
 
 
 
-return _rideBox.values
+return _box.values
 
 .where(
 
-(ride)=>
-
-
-ride.status == "ACCEPTED"
-
+(ride)=>ride.status=="ACCEPTED"
 
 )
 
@@ -140,7 +147,6 @@ ride.status == "ACCEPTED"
 
 
 
-
 static double getTotalEarning(){
 
 
@@ -149,14 +155,16 @@ double total = 0;
 
 
 
-for(final ride in _rideBox.values){
+for(final ride in _box.values){
 
 
 
-if(ride.status == "ACCEPTED"){
+if(ride.status=="ACCEPTED"){
+
 
 
 total += ride.fare;
+
 
 
 }
@@ -180,12 +188,11 @@ return total;
 
 
 
-
 static int getTotalRides(){
 
 
 
-return _rideBox.length;
+return _box.length;
 
 
 
@@ -198,12 +205,11 @@ return _rideBox.length;
 
 
 
-
 static Future<void> clearHistory() async {
 
 
 
-await _rideBox.clear();
+await _box.clear();
 
 
 
