@@ -5,17 +5,13 @@ class SettingsModel {
 final bool autoAccept;
 
 
-
 final double minimumFare;
-
 
 
 final double minimumPerKm;
 
 
-
 final double maximumDistance;
-
 
 
 final int acceptDelay;
@@ -24,24 +20,21 @@ final int acceptDelay;
 
 
 
-SettingsModel({
+
+const SettingsModel({
 
 
 
 this.autoAccept = false,
 
 
-
 this.minimumFare = 100,
-
 
 
 this.minimumPerKm = 12,
 
 
-
 this.maximumDistance = 40,
-
 
 
 this.acceptDelay = 2,
@@ -49,6 +42,7 @@ this.acceptDelay = 2,
 
 
 });
+
 
 
 
@@ -86,6 +80,7 @@ return {
 
 
 }
+
 
 
 
@@ -147,6 +142,7 @@ map["acceptDelay"] ?? 2,
 
 
 }
+
 
 
 
