@@ -11,42 +11,7 @@ class SettingsDatabase {
 
 
 
-static const String autoAcceptKey =
-
-"autoAccept";
-
-
-
-static const String minimumFareKey =
-
-"minimumFare";
-
-
-
-static const String minimumPerKmKey =
-
-"minimumPerKm";
-
-
-
-static const String maximumDistanceKey =
-
-"maximumDistance";
-
-
-
-static const String acceptDelayKey =
-
-"acceptDelay";
-
-
-
-
-
-
-
-
-static late SharedPreferences _prefs;
+static SharedPreferences? _prefs;
 
 
 
@@ -58,9 +23,40 @@ static Future<void> initialize() async {
 
 
 
-_prefs =
+_prefs = await SharedPreferences.getInstance();
 
-await SharedPreferences.getInstance();
+
+
+}
+
+
+
+
+
+
+
+
+static SharedPreferences get prefs {
+
+
+
+if(_prefs == null){
+
+
+
+throw Exception(
+
+"SettingsDatabase not initialized"
+
+);
+
+
+
+}
+
+
+
+return _prefs!;
 
 
 
@@ -84,51 +80,61 @@ return SettingsModel(
 
 autoAccept:
 
-_prefs.getBool(
+prefs.getBool(
 
-autoAcceptKey
+"autoAccept"
 
 ) ?? false,
 
 
 
+
+
 minimumFare:
 
-_prefs.getDouble(
+prefs.getDouble(
 
-minimumFareKey
+"minimumFare"
 
 ) ?? 100,
 
 
 
+
+
 minimumPerKm:
 
-_prefs.getDouble(
+prefs.getDouble(
 
-minimumPerKmKey
+"minimumPerKm"
 
 ) ?? 12,
 
 
 
+
+
 maximumDistance:
 
-_prefs.getDouble(
+prefs.getDouble(
 
-maximumDistanceKey
+"maximumDistance"
 
 ) ?? 40,
 
 
 
+
+
 acceptDelay:
 
-_prefs.getInt(
+prefs.getInt(
 
-acceptDelayKey
+"acceptDelay"
 
 ) ?? 2,
+
+
 
 
 
@@ -154,81 +160,59 @@ SettingsModel settings
 
 
 
-await _prefs.setBool(
+await prefs.setBool(
 
-
-
-autoAcceptKey,
-
-
+"autoAccept",
 
 settings.autoAccept,
 
-
-
 );
 
 
 
-await _prefs.setDouble(
 
 
+await prefs.setDouble(
 
-minimumFareKey,
-
-
+"minimumFare",
 
 settings.minimumFare,
 
-
-
 );
 
 
 
-await _prefs.setDouble(
 
 
+await prefs.setDouble(
 
-minimumPerKmKey,
-
-
+"minimumPerKm",
 
 settings.minimumPerKm,
 
-
-
 );
 
 
 
-await _prefs.setDouble(
 
 
+await prefs.setDouble(
 
-maximumDistanceKey,
-
-
+"maximumDistance",
 
 settings.maximumDistance,
 
-
-
 );
 
 
 
-await _prefs.setInt(
 
 
+await prefs.setInt(
 
-acceptDelayKey,
-
-
+"acceptDelay",
 
 settings.acceptDelay,
-
-
 
 );
 
@@ -244,11 +228,11 @@ settings.acceptDelay,
 
 
 
-static Future<void> clearSettings() async {
+static Future<void> reset() async {
 
 
 
-await _prefs.clear();
+await prefs.clear();
 
 
 
