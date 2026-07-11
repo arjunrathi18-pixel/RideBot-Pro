@@ -5,9 +5,15 @@ import '../../models/ride_model.dart';
 
 import '../../models/settings_model.dart';
 
+
 import '../filter/filter_engine.dart';
 
+
 import '../../data/database/ride_database.dart';
+
+
+import '../notifications/notification_service.dart';
+
 
 
 
@@ -19,9 +25,13 @@ class AutomationService {
 
 static const MethodChannel _channel =
 
-    MethodChannel(
-      'ridebot/automation'
-    );
+const MethodChannel(
+
+'ridebot/automation'
+
+);
+
+
 
 
 
@@ -43,28 +53,29 @@ _channel.setMethodCallHandler(
 
 
 
-switch(call.method){
-
-
-
-case "ride_detected":
+if(call.method == "ride_detected"){
 
 
 
 final data =
 
-call.arguments;
+Map<String,dynamic>.from(
+
+call.arguments
+
+);
 
 
 
-final ride =
 
-RideModel(
+
+final ride = RideModel(
+
 
 
 platform:
 
-"Detected App",
+"Auto Ride",
 
 
 
@@ -87,11 +98,16 @@ distance:
 earningPerKm:
 
 
+
 (data["fare"] ?? 0)
+
+.toDouble()
 
 /
 
-(data["distance"] ?? 1),
+((data["distance"] ?? 1)
+
+.toDouble()),
 
 
 
@@ -125,15 +141,31 @@ DateTime.now(),
 
 
 
-bool accepted =
+
+await NotificationService.rideDetected(
+
+ride.fare,
+
+ride.distance,
+
+);
+
+
+
+
+
+
+
+final accepted =
 
 FilterEngine.checkRide(
 
 ride,
 
-settings
+settings,
 
 );
+
 
 
 
@@ -143,21 +175,31 @@ if(accepted){
 
 
 
-await acceptRide();
-
-
-
 await RideDatabase.saveRide(
+
+
 
 ride.copyWith(
 
 status:
 
-"ACCEPTED"
+"ACCEPTED",
 
-)
+),
+
+
 
 );
+
+
+
+
+
+await NotificationService.rideAccepted();
+
+
+
+await acceptRide();
 
 
 
@@ -167,41 +209,17 @@ else{
 
 
 
-await RideDatabaseService.saveRide(
+await RideDatabase.saveRide(
+
+
 
 ride.copyWith(
 
 status:
 
-"REJECTED"
+"REJECTED",
 
-)
-
-);
-
-
-
-}
-
-
-
-break;
-
-
-
-
-
-default:
-
-break;
-
-
-
-}
-
-
-
-}
+),
 
 
 
@@ -209,7 +227,26 @@ break;
 
 
 
+await NotificationService.rideRejected();
+
+
+
 }
+
+
+
+}
+
+
+
+}
+
+);
+
+
+
+}
+
 
 
 
