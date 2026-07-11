@@ -18,23 +18,9 @@ static Database? _database;
 
 
 
-static const String tableName = "rides";
-
-
-
-
-
-
-
 static Future<void> initialize() async {
 
-
-
-_database ??=
-
-await _initDatabase();
-
-
+_database ??= await _createDatabase();
 
 }
 
@@ -44,18 +30,19 @@ await _initDatabase();
 
 
 
-
-static Future<Database> _initDatabase() async {
-
+static Future<Database> _createDatabase() async {
 
 
-final path =
 
-join(
+final dbPath = await getDatabasesPath();
 
-await getDatabasesPath(),
 
-"ridebot.db"
+
+final path = join(
+
+dbPath,
+
+"ridebot_pro.db"
 
 );
 
@@ -63,17 +50,11 @@ await getDatabasesPath(),
 
 
 
-return await openDatabase(
-
-
+return openDatabase(
 
 path,
 
-
-
 version: 1,
-
-
 
 onCreate: (db, version) async {
 
@@ -81,51 +62,27 @@ onCreate: (db, version) async {
 
 await db.execute('''
 
-
-
-CREATE TABLE $tableName (
-
-
+CREATE TABLE rides(
 
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-
-
 platform TEXT,
-
-
 
 fare REAL,
 
-
-
 distance REAL,
-
-
 
 earningPerKm REAL,
 
-
-
 pickup TEXT,
-
-
 
 dropLocation TEXT,
 
-
-
 status TEXT,
-
-
 
 createdAt TEXT
 
-
-
 )
-
-
 
 ''');
 
@@ -148,12 +105,11 @@ createdAt TEXT
 
 
 
-static Database get database {
+static Database get db {
 
 
 
 if(_database == null){
-
 
 throw Exception(
 
@@ -161,15 +117,12 @@ throw Exception(
 
 );
 
-
 }
 
 
 
 return _database!;
 
-
-
 }
 
 
@@ -179,8 +132,7 @@ return _database!;
 
 
 
-
-static Future<void> saveRide(
+static Future<int> saveRide(
 
 RideModel ride
 
@@ -188,30 +140,21 @@ RideModel ride
 
 
 
-await database.insert(
+return await db.insert(
 
-
-
-tableName,
-
-
+"rides",
 
 ride.toMap(),
-
-
 
 conflictAlgorithm:
 
 ConflictAlgorithm.replace,
-
-
 
 );
 
 
 
 }
-
 
 
 
@@ -224,21 +167,13 @@ static Future<List<RideModel>> getAllRides() async {
 
 
 
-final result =
+final result = await db.query(
 
-await database.query(
-
-
-
-tableName,
-
-
+"rides",
 
 orderBy:
 
 "id DESC",
-
-
 
 );
 
@@ -246,15 +181,11 @@ orderBy:
 
 
 
-return result
+return result.map((e){
 
-.map(
+return RideModel.fromMap(e);
 
-(e)=>RideModel.fromMap(e)
-
-)
-
-.toList();
+}).toList();
 
 
 
@@ -267,20 +198,13 @@ return result
 
 
 
-
 static Future<List<RideModel>> getAcceptedRides() async {
 
 
 
-final result =
+final result = await db.query(
 
-await database.query(
-
-
-
-tableName,
-
-
+"rides",
 
 where:
 
@@ -298,78 +222,19 @@ orderBy:
 
 "id DESC",
 
-
-
 );
 
 
 
+return result.map((e){
 
+return RideModel.fromMap(e);
 
-return result
-
-.map(
-
-(e)=>RideModel.fromMap(e)
-
-)
-
-.toList();
+}).toList();
 
 
 
 }
-
-
-
-
-
-
-
-
-
-static Future<double> getTotalEarning() async {
-
-
-
-final result =
-
-await database.rawQuery(
-
-
-
-'''
-
-SELECT SUM(fare) as total
-
-FROM $tableName
-
-WHERE status = ?
-
-''',
-
-
-
-["ACCEPTED"],
-
-
-
-);
-
-
-
-
-
-return
-
-(result.first["total"] ?? 0)
-
-as double;
-
-
-
-}
-
 
 
 
@@ -382,21 +247,9 @@ static Future<int> getTotalRides() async {
 
 
 
-final result =
+final result = await db.rawQuery(
 
-await database.rawQuery(
-
-
-
-'''
-
-SELECT COUNT(*) as total
-
-FROM $tableName
-
-''',
-
-
+"SELECT COUNT(*) as count FROM rides"
 
 );
 
@@ -406,9 +259,7 @@ FROM $tableName
 
 return
 
-(result.first["total"] ?? 0)
-
-as int;
+(result.first["count"] as int?) ?? 0;
 
 
 
@@ -421,14 +272,65 @@ as int;
 
 
 
+static Future<double> getTotalEarning() async {
+
+
+
+final result = await db.rawQuery(
+
+'''
+
+SELECT SUM(fare) as total
+
+FROM rides
+
+WHERE status = ?
+
+''',
+
+["ACCEPTED"],
+
+);
+
+
+
+
+
+
+final value = result.first["total"];
+
+
+
+
+
+if(value == null){
+
+return 0.0;
+
+}
+
+
+
+return (value as num).toDouble();
+
+
+
+}
+
+
+
+
+
+
+
 
 static Future<void> clearHistory() async {
 
 
 
-await database.delete(
+await db.delete(
 
-tableName
+"rides"
 
 );
 
