@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+
 import '../services/app_state_provider.dart';
+
+import '../data/database/ride_database.dart';
+
 
 
 
@@ -14,96 +18,172 @@ super.key
 
 
 
+
+
 @override
 Widget build(BuildContext context){
 
 
-final state =
+
+final app =
+
 context.watch<AppStateProvider>();
+
+
+
+
+final totalRides =
+
+RideDatabase.getTotalRides();
+
+
+
+final totalEarning =
+
+RideDatabase.getTotalEarning();
+
+
+
+final acceptedRides =
+
+RideDatabase.getAcceptedRides().length;
+
+
+
 
 
 return Scaffold(
 
 
-appBar: AppBar(
+
+appBar:
+
+AppBar(
 
 title:
+
 const Text(
-"RideBot Pro"
-),
 
-centerTitle:true,
-
+"RideBot Pro Dashboard"
 
 ),
+
+
+centerTitle: true,
+
+),
+
+
+
 
 
 
 body:
-SingleChildScrollView(
+
+RefreshIndicator(
+
+
+
+onRefresh: () async{
+
+
+},
+
+child:
+
+ListView(
+
 
 
 padding:
+
 const EdgeInsets.all(16),
 
 
 
-child:
-Column(
-
 children:[
+
+
 
 
 
 Card(
 
 child:
+
 Padding(
 
 padding:
+
 const EdgeInsets.all(20),
 
 
+
 child:
+
 Column(
 
 children:[
 
 
-const Icon(
 
-Icons.smart_toy,
+Icon(
 
-size:50,
+app.automationRunning
+
+?
+
+Icons.play_circle
+
+:
+
+Icons.pause_circle,
+
+
+
+size:
+
+60,
 
 ),
+
+
 
 
 const SizedBox(
+
 height:10
+
 ),
+
+
 
 
 
 Text(
 
-state.automationRunning
+app.automationRunning
 
 ?
+
 "Automation Running"
 
 :
+
 "Automation Stopped",
 
+
+
 style:
+
 const TextStyle(
 
 fontSize:20,
 
-fontWeight:
-FontWeight.bold
+fontWeight:FontWeight.bold
 
 ),
+
 
 
 ),
@@ -113,10 +193,12 @@ FontWeight.bold
 ],
 
 
+
 ),
 
 
 ),
+
 
 
 ),
@@ -126,8 +208,11 @@ FontWeight.bold
 
 
 const SizedBox(
-height:20
+
+height:16
+
 ),
+
 
 
 
@@ -135,38 +220,53 @@ height:20
 
 Row(
 
+
+
 children:[
+
 
 
 Expanded(
 
 child:
-_statCard(
 
-"Today's Rides",
+_dashboardCard(
 
-"0",
+"Total Rides",
+
+"$totalRides",
 
 Icons.motorcycle
 
-)
+),
 
 ),
 
 
 
+
+const SizedBox(
+
+width:10
+
+),
+
+
+
+
 Expanded(
 
 child:
-_statCard(
 
-"Earning",
+_dashboardCard(
 
-"₹0",
+"Accepted",
 
-Icons.currency_rupee
+"$acceptedRides",
 
-)
+Icons.check_circle
+
+),
 
 ),
 
@@ -175,6 +275,32 @@ Icons.currency_rupee
 ],
 
 
+
+),
+
+
+
+
+
+
+const SizedBox(
+
+height:16
+
+),
+
+
+
+
+
+_dashboardCard(
+
+"Total Earnings",
+
+"₹ $totalEarning",
+
+Icons.currency_rupee
+
 ),
 
 
@@ -182,7 +308,9 @@ Icons.currency_rupee
 
 
 const SizedBox(
-height:20
+
+height:16
+
 ),
 
 
@@ -192,37 +320,55 @@ height:20
 Card(
 
 child:
+
 ListTile(
 
-
 leading:
+
 const Icon(
-Icons.analytics
+
+Icons.info
+
 ),
+
 
 
 title:
+
 const Text(
-"Performance"
+
+"Current Filters"
+
 ),
+
 
 
 subtitle:
-const Text(
-"No rides recorded yet"
+
+Text(
+
+"Min Fare ₹${app.settings.minimumFare}\n"
+
+"Min ₹/KM ${app.settings.minimumPerKm}\n"
+
+"Max Distance ${app.settings.maximumDistance} KM"
+
 ),
 
 
+
 ),
 
 
-)
+
+),
 
 
 
 
 
 ],
+
 
 
 ),
@@ -236,13 +382,17 @@ const Text(
 );
 
 
+
 }
 
 
 
 
 
-Widget _statCard(
+
+
+
+Widget _dashboardCard(
 
 String title,
 
@@ -256,28 +406,46 @@ IconData icon
 
 return Card(
 
+
+
 child:
+
 Padding(
 
 padding:
-const EdgeInsets.all(16),
+
+const EdgeInsets.all(18),
+
 
 
 child:
+
 Column(
 
+
+
 children:[
+
 
 
 Icon(icon),
 
 
+
 const SizedBox(
+
 height:8
+
 ),
 
 
-Text(title),
+
+Text(
+
+title
+
+),
+
 
 
 Text(
@@ -285,26 +453,29 @@ Text(
 value,
 
 style:
+
 const TextStyle(
 
 fontSize:22,
 
-fontWeight:
-FontWeight.bold
+fontWeight:FontWeight.bold
 
-)
+),
 
-)
+),
 
 
 
 ],
 
 
+
 ),
 
 
+
 ),
+
 
 
 );
