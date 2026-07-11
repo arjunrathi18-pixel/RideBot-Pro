@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
+
 import 'data/database/ride_database.dart';
 import 'data/database/settings_database.dart';
 
 
-import 'services/app_state_provider.dart';
 import 'services/notifications/notification_service.dart';
 
 
+import 'services/app_state_provider.dart';
+
+
 import 'screens/main_navigation.dart';
+
+
 
 
 
@@ -26,23 +31,14 @@ WidgetsFlutterBinding.ensureInitialized();
 
 
 
-// SQLite Database
 
 await RideDatabase.initialize();
 
 
 
-
-
-// Settings Storage
-
 await SettingsDatabase.initialize();
 
 
-
-
-
-// Notification Service
 
 await NotificationService.initialize();
 
@@ -51,42 +47,10 @@ await NotificationService.initialize();
 
 
 
-final appState =
-
-AppStateProvider();
-
-
-
-await appState.initialize();
-
-
-
-
-
 
 runApp(
 
-
-
-ChangeNotifierProvider.value(
-
-
-
-value:
-
-appState,
-
-
-
-child:
-
-const RideBotApp(),
-
-
-
-),
-
-
+const RideBotApp()
 
 );
 
@@ -124,7 +88,23 @@ Widget build(BuildContext context){
 
 
 
-return MaterialApp(
+return ChangeNotifierProvider(
+
+
+
+create:
+
+(context)
+
+=> AppStateProvider(),
+
+
+
+
+
+child:
+
+MaterialApp(
 
 
 
@@ -154,51 +134,19 @@ true,
 
 
 
-colorSchemeSeed:
+colorScheme:
+
+ColorScheme.fromSeed(
+
+seedColor:
 
 Colors.blue,
-
-
 
 ),
 
 
 
-
-
-darkTheme:
-
-ThemeData(
-
-
-
-useMaterial3:
-
-true,
-
-
-
-colorSchemeSeed:
-
-Colors.blue,
-
-
-
-brightness:
-
-Brightness.dark,
-
-
-
 ),
-
-
-
-
-
-themeMode:
-
-ThemeMode.system,
 
 
 
@@ -208,6 +156,10 @@ ThemeMode.system,
 home:
 
 const MainNavigation(),
+
+
+
+),
 
 
 
