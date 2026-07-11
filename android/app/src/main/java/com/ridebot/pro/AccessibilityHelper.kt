@@ -5,7 +5,11 @@ import android.view.accessibility.AccessibilityNodeInfo
 
 
 
+
+
 object AccessibilityHelper {
+
+
 
 
 
@@ -28,32 +32,146 @@ return false
 
 
 
-val text =
+
+
+
+val nodeText =
+
+(
+
 root.text?.toString()
-?.lowercase()
+
 ?: ""
+
+)
+
+.lowercase()
+
+
+
+
+
+
+
+val nodeDescription =
+
+(
+
+root.contentDescription?.toString()
+
+?: ""
+
+)
+
+.lowercase()
+
+
+
+
+
 
 
 
 for(keyword in keywords){
 
 
-if(text.contains(keyword.lowercase())){
+
+val key =
+
+keyword.lowercase()
+
+
+
+
+
+if(
+
+nodeText.contains(key)
+
+||
+
+nodeDescription.contains(key)
+
+){
+
+
+
+if(
+
+root.isClickable
+
+){
+
 
 
 root.performAction(
+
 AccessibilityNodeInfo.ACTION_CLICK
+
 )
+
 
 
 return true
 
 
+
+}
+
+
+
+
+
+
+
+var parent =
+
+root.parent
+
+
+
+
+
+while(parent != null){
+
+
+
+if(parent.isClickable){
+
+
+
+parent.performAction(
+
+AccessibilityNodeInfo.ACTION_CLICK
+
+)
+
+
+
+return true
+
+
+
+}
+
+
+
+parent = parent.parent
+
+
+
 }
 
 
 
 }
+
+
+
+}
+
+
+
 
 
 
@@ -62,22 +180,42 @@ return true
 for(i in 0 until root.childCount){
 
 
+
 val child =
+
 root.getChild(i)
 
 
 
-if(findAndClick(child, keywords)){
+
+
+if(
+
+findAndClick(
+
+child,
+
+keywords
+
+)
+
+){
+
 
 
 return true
 
 
+
+}
+
+
+
 }
 
 
 
-}
+
 
 
 
@@ -86,6 +224,8 @@ return false
 
 
 }
+
+
 
 
 
