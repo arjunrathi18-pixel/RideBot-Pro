@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
-
-import 'models/ride_model.dart';
-import 'models/settings_model.dart';
 
 
 import 'data/database/ride_database.dart';
 import 'data/database/settings_database.dart';
 
 
-import 'services/notifications/notification_service.dart';
 import 'services/app_state_provider.dart';
+import 'services/notifications/notification_service.dart';
 
 
 import 'screens/main_navigation.dart';
-
 
 
 
@@ -32,39 +26,15 @@ WidgetsFlutterBinding.ensureInitialized();
 
 
 
-// Hive Initialize
-
-await Hive.initFlutter();
-
-
-
-
-
-// Register Hive Adapters
-
-Hive.registerAdapter(
-
-RideModelAdapter()
-
-);
-
-
-
-Hive.registerAdapter(
-
-SettingsModelAdapter()
-
-);
-
-
-
-
-
-
-// Database Initialize
+// SQLite Database
 
 await RideDatabase.initialize();
 
+
+
+
+
+// Settings Storage
 
 await SettingsDatabase.initialize();
 
@@ -72,8 +42,7 @@ await SettingsDatabase.initialize();
 
 
 
-
-// Notification Initialize
+// Notification Service
 
 await NotificationService.initialize();
 
@@ -89,7 +58,6 @@ AppStateProvider();
 
 
 await appState.initialize();
-
 
 
 
@@ -152,7 +120,7 @@ super.key
 
 @override
 
-Widget build(BuildContext context) {
+Widget build(BuildContext context){
 
 
 
@@ -169,7 +137,6 @@ false,
 title:
 
 "RideBot Pro",
-
 
 
 
@@ -193,14 +160,7 @@ Colors.blue,
 
 
 
-brightness:
-
-Brightness.light,
-
-
-
 ),
-
 
 
 
@@ -231,7 +191,6 @@ Brightness.dark,
 
 
 ),
-
 
 
 
