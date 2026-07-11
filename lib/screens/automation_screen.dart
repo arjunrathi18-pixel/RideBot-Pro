@@ -8,7 +8,9 @@ import '../services/app_state_provider.dart';
 
 
 
+
 class AutomationScreen extends StatelessWidget {
+
 
 
 const AutomationScreen({
@@ -21,22 +23,33 @@ super.key
 
 
 
-Future<void> openAccessibilitySettings() async {
+
+
+Future<void> openAccessibility() async {
+
 
 
 const intent = AndroidIntent(
+
+
 
 action:
 
 "android.settings.ACCESSIBILITY_SETTINGS",
 
+
+
 );
+
 
 
 await intent.launch();
 
 
+
 }
+
+
 
 
 
@@ -52,6 +65,7 @@ Widget build(BuildContext context){
 final app =
 
 context.watch<AppStateProvider>();
+
 
 
 
@@ -73,9 +87,14 @@ const Text(
 
 ),
 
+
+
 centerTitle:true,
 
+
+
 ),
+
 
 
 
@@ -85,15 +104,19 @@ body:
 
 Padding(
 
+
+
 padding:
 
-const EdgeInsets.all(20),
+const EdgeInsets.all(16),
 
 
 
 child:
 
 Column(
+
+
 
 children:[
 
@@ -107,9 +130,11 @@ child:
 
 Padding(
 
+
+
 padding:
 
-const EdgeInsets.all(20),
+const EdgeInsets.all(24),
 
 
 
@@ -117,21 +142,27 @@ child:
 
 Column(
 
+
+
 children:[
+
+
 
 
 
 Icon(
 
+
+
 app.automationRunning
 
 ?
 
-Icons.play_circle
+Icons.smart_toy
 
 :
 
-Icons.pause_circle,
+Icons.smart_toy_outlined,
 
 
 
@@ -139,21 +170,28 @@ size:
 
 80,
 
+
+
 ),
+
 
 
 
 
 const SizedBox(
 
-height:15
+height:16,
 
 ),
 
 
 
 
+
+
 Text(
+
+
 
 app.automationRunning
 
@@ -173,7 +211,7 @@ const TextStyle(
 
 fontSize:22,
 
-fontWeight:FontWeight.bold
+fontWeight:FontWeight.bold,
 
 ),
 
@@ -201,11 +239,17 @@ fontWeight:FontWeight.bold
 
 
 
+
+
+
 const SizedBox(
 
-height:20
+height:20,
 
 ),
+
+
+
 
 
 
@@ -219,6 +263,8 @@ icon:
 
 Icon(
 
+
+
 app.automationRunning
 
 ?
@@ -227,9 +273,12 @@ Icons.stop
 
 :
 
-Icons.play_arrow
+Icons.play_arrow,
+
+
 
 ),
+
 
 
 
@@ -237,6 +286,8 @@ Icons.play_arrow
 label:
 
 Text(
+
+
 
 app.automationRunning
 
@@ -246,7 +297,9 @@ app.automationRunning
 
 :
 
-"Start Automation"
+"Start Automation",
+
+
 
 ),
 
@@ -254,7 +307,10 @@ app.automationRunning
 
 
 
+
 onPressed:
+
+
 
 (){
 
@@ -292,11 +348,17 @@ app.startAutomation();
 
 
 
+
+
+
 const SizedBox(
 
-height:15
+height:15,
 
 ),
+
+
+
 
 
 
@@ -316,24 +378,32 @@ Icons.accessibility
 
 
 
+
+
 label:
 
 const Text(
 
-"Open Accessibility Settings"
+"Accessibility Settings"
 
 ),
+
+
 
 
 
 
 onPressed:
 
-openAccessibilitySettings,
+openAccessibility,
 
 
 
 ),
+
+
+
+
 
 
 
@@ -341,9 +411,13 @@ openAccessibilitySettings,
 
 const SizedBox(
 
-height:20
+height:20,
 
 ),
+
+
+
+
 
 
 
@@ -355,35 +429,81 @@ const Card(
 
 child:
 
-ListTile(
+Padding(
 
 
 
-leading:
+padding:
 
-Icon(
-
-Icons.info
-
-),
+EdgeInsets.all(16),
 
 
 
-title:
+child:
+
+Column(
+
+
+
+crossAxisAlignment:
+
+CrossAxisAlignment.start,
+
+
+
+children:[
+
+
+
+
 
 Text(
 
-"How it works"
+"How RideBot Works",
+
+style:
+
+TextStyle(
+
+fontWeight:
+
+FontWeight.bold
+
+),
 
 ),
 
 
 
-subtitle:
+
+
+SizedBox(
+
+height:8,
+
+),
+
+
+
+
 
 Text(
 
-"RideBot reads ride offers using Accessibility Service and applies your filters."
+"1. Accessibility service reads ride screen\n"
+
+"2. Filters check your settings\n"
+
+"3. Matching rides are processed automatically"
+
+),
+
+
+
+
+
+],
+
+
 
 ),
 
@@ -394,6 +514,7 @@ Text(
 
 
 ),
+
 
 
 
