@@ -22,7 +22,7 @@ const AndroidInitializationSettings androidSettings =
 
 AndroidInitializationSettings(
 
-'@mipmap/ic_launcher',
+'notification_icon',
 
 );
 
