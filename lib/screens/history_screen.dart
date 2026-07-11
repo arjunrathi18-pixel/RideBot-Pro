@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import '../data/database/ride_database.dart';
 
 import '../models/ride_model.dart';
@@ -9,8 +8,7 @@ import '../models/ride_model.dart';
 
 
 
-class HistoryScreen extends StatelessWidget {
-
+class HistoryScreen extends StatefulWidget {
 
 
 const HistoryScreen({
@@ -18,6 +16,92 @@ const HistoryScreen({
 super.key
 
 });
+
+
+
+
+
+@override
+
+State<HistoryScreen> createState()
+
+=> _HistoryScreenState();
+
+
+
+}
+
+
+
+
+
+
+
+
+class _HistoryScreenState
+
+extends State<HistoryScreen>{
+
+
+
+List<RideModel> rides = [];
+
+bool loading = true;
+
+
+
+
+
+
+
+
+@override
+
+void initState(){
+
+
+
+super.initState();
+
+loadRides();
+
+
+
+}
+
+
+
+
+
+
+
+
+Future<void> loadRides() async {
+
+
+
+final data =
+
+await RideDatabase.getAcceptedRides();
+
+
+
+setState((){
+
+
+
+rides = data;
+
+loading = false;
+
+
+
+});
+
+
+
+}
+
 
 
 
@@ -47,8 +131,6 @@ const Text(
 
 ),
 
-
-
 centerTitle:true,
 
 ),
@@ -60,86 +142,103 @@ centerTitle:true,
 
 body:
 
-FutureBuilder<List<RideModel>>(
+loading
 
+?
 
-
-future:
-
-RideDatabase.getAllRides(),
-
-
-
-
-builder:
-
-(context, snapshot){
-
-
-
-if(snapshot.connectionState ==
-
-ConnectionState.waiting){
-
-
-
-return const Center(
+const Center(
 
 child:
 
 CircularProgressIndicator(),
 
-);
+)
+
+:
+
+rides.isEmpty
+
+?
+
+const Center(
 
 
-
-}
-
-
-
-
-
-
-if(!snapshot.hasData ||
-
-snapshot.data!.isEmpty){
-
-
-
-return const Center(
 
 child:
 
-Text(
+Column(
 
-"No rides found"
+
+
+mainAxisAlignment:
+
+MainAxisAlignment.center,
+
+
+
+children:[
+
+
+
+Icon(
+
+Icons.history,
+
+size:80,
 
 ),
 
-);
+
+
+SizedBox(
+
+height:15,
+
+),
 
 
 
-}
+Text(
+
+"No accepted rides yet",
+
+style:
+
+TextStyle(
+
+fontSize:18,
+
+),
+
+),
 
 
 
+],
 
 
 
-
-final rides =
-
-snapshot.data!;
+),
 
 
 
+)
+
+:
+
+RefreshIndicator(
 
 
 
+onRefresh:
+
+loadRides,
 
 
-return ListView.builder(
+
+child:
+
+ListView.builder(
 
 
 
@@ -161,9 +260,158 @@ itemBuilder:
 
 
 
-return _rideCard(
+final ride = rides[index];
 
-rides[index]
+
+
+
+
+return Card(
+
+
+
+margin:
+
+const EdgeInsets.only(
+
+bottom:12
+
+),
+
+
+
+child:
+
+ListTile(
+
+
+
+leading:
+
+CircleAvatar(
+
+
+
+child:
+
+Icon(
+
+Icons.directions_car,
+
+),
+
+),
+
+
+
+
+
+title:
+
+Text(
+
+"₹${ride.fare.toStringAsFixed(0)}",
+
+style:
+
+const TextStyle(
+
+fontWeight:
+
+FontWeight.bold,
+
+fontSize:18,
+
+),
+
+),
+
+
+
+
+
+subtitle:
+
+Column(
+
+
+
+crossAxisAlignment:
+
+CrossAxisAlignment.start,
+
+
+
+children:[
+
+
+
+
+
+Text(
+
+"${ride.distance.toStringAsFixed(1)} KM"
+
+),
+
+
+
+
+
+Text(
+
+ride.pickup,
+
+maxLines:1,
+
+overflow:
+
+TextOverflow.ellipsis,
+
+),
+
+
+
+
+
+Text(
+
+formatDate(
+
+ride.createdAt
+
+),
+
+),
+
+
+
+
+
+],
+
+
+
+),
+
+
+
+
+
+
+trailing:
+
+const Icon(
+
+Icons.check_circle,
+
+),
+
+
+
+),
+
+
 
 );
 
@@ -173,11 +421,7 @@ rides[index]
 
 
 
-);
-
-
-
-},
+),
 
 
 
@@ -198,228 +442,15 @@ rides[index]
 
 
 
-Widget _rideCard(
+String formatDate(DateTime date){
 
-RideModel ride
 
-){
 
+return
 
+"${date.day}/${date.month}/${date.year} "
 
-final accepted =
-
-ride.status == "ACCEPTED";
-
-
-
-
-
-
-return Card(
-
-
-
-margin:
-
-const EdgeInsets.only(
-
-bottom:12,
-
-),
-
-
-
-
-
-
-child:
-
-Padding(
-
-
-
-padding:
-
-const EdgeInsets.all(16),
-
-
-
-child:
-
-Column(
-
-
-
-crossAxisAlignment:
-
-CrossAxisAlignment.start,
-
-
-
-children:[
-
-
-
-
-
-Row(
-
-
-
-mainAxisAlignment:
-
-MainAxisAlignment.spaceBetween,
-
-
-
-children:[
-
-
-
-Text(
-
-ride.platform,
-
-style:
-
-const TextStyle(
-
-fontWeight:
-
-FontWeight.bold,
-
-),
-
-),
-
-
-
-
-
-Icon(
-
-
-
-accepted
-
-?
-
-Icons.check_circle
-
-:
-
-Icons.cancel,
-
-
-
-),
-
-
-
-],
-
-
-
-),
-
-
-
-
-
-
-const SizedBox(
-
-height:10,
-
-),
-
-
-
-
-
-
-Text(
-
-"Fare : ₹${ride.fare.toStringAsFixed(2)}"
-
-),
-
-
-
-
-
-Text(
-
-"Distance : ${ride.distance} KM"
-
-),
-
-
-
-
-
-Text(
-
-"Earning/KM : ₹${ride.earningPerKm.toStringAsFixed(2)}"
-
-),
-
-
-
-
-
-Text(
-
-"Pickup : ${ride.pickup}"
-
-),
-
-
-
-
-
-Text(
-
-"Status : ${ride.status}"
-
-),
-
-
-
-
-
-
-Text(
-
-ride.createdAt.toString(),
-
-style:
-
-const TextStyle(
-
-fontSize:12,
-
-),
-
-),
-
-
-
-
-
-],
-
-
-
-),
-
-
-
-),
-
-
-
-);
+"${date.hour}:${date.minute.toString().padLeft(2,'0')}";
 
 
 
