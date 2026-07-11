@@ -8,6 +8,7 @@ import 'services/app_state_provider.dart';
 import 'data/database/ride_database.dart';
 import 'models/ride_model.dart';
 import 'models/settings_model.dart';
+import 'data/database/settings_database.dart';
 
 
 Future<void> main() async {
@@ -31,7 +32,7 @@ SettingsModelAdapter()
 
 
 await RideDatabase.init();
-
+await SettingsDatabase.initialize();
 
 
   runApp(
